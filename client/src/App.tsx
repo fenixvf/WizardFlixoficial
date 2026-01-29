@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Pages
@@ -58,7 +58,7 @@ export default function App() {
                 <Router />
               </main>
               {/* Sidebar Blur Overlay when expanded */}
-              <div className="fixed inset-0 z-0 bg-background/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0 group-has-data-[state=expanded]/sidebar-wrapper:opacity-100" />
+              <div className="fixed inset-0 z-10 bg-background/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0 group-has-data-[state=expanded]/sidebar-wrapper:opacity-100" />
             </div>
           </div>
         </SidebarProvider>
