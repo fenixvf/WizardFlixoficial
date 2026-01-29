@@ -37,13 +37,16 @@ export function Navbar() {
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-1">
           <NavLink href="/" active={isActive("/")} icon={<Sparkles className="w-4 h-4" />}>
-            Home
+            Início
           </NavLink>
           <NavLink href="/grimoire" active={isActive("/grimoire")} icon={<ScrollText className="w-4 h-4" />}>
-            Grimoire
+            Grimório
+          </NavLink>
+          <NavLink href="/genres" active={isActive("/genres")} icon={<Sparkles className="w-4 h-4" />}>
+            Gêneros
           </NavLink>
           <NavLink href="/search" active={isActive("/search")} icon={<Search className="w-4 h-4" />}>
-            Search
+            Buscar
           </NavLink>
         </nav>
 
@@ -52,24 +55,34 @@ export function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-full w-10 h-10 p-0 border border-primary/20 hover:bg-primary/10 hover:border-primary/50">
-                  <User className="w-5 h-5 text-purple-300" />
+                <Button variant="ghost" className="rounded-full w-10 h-10 p-0 border border-primary/20 hover:bg-primary/10 hover:border-primary/50 overflow-hidden">
+                  {(user as any).avatarUrl ? (
+                    <img src={(user as any).avatarUrl} alt={user.username} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-purple-300" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-zinc-950 border-primary/20 text-purple-100">
                 <div className="px-2 py-1.5 text-sm font-semibold text-purple-400 border-b border-white/10 mb-1">
                   {user.username}
                 </div>
+                <Link href="/grimoire">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <ScrollText className="w-4 h-4 mr-2" />
+                    Minha Lista
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem onClick={() => logout()} className="text-red-400 focus:text-red-300 focus:bg-red-950/30 cursor-pointer">
                   <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  Sair
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Link href="/auth">
               <Button size="sm" className="font-rune tracking-wide bg-primary/20 hover:bg-primary/40 text-primary-foreground border border-primary/50 hover:border-primary">
-                Join Guild
+                Entrar na Guilda
               </Button>
             </Link>
           )}

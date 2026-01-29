@@ -45,6 +45,15 @@ export class DatabaseStorage implements IStorage {
       )
     );
   }
+
+  async updateUserAvatar(userId: number, avatarUrl: string): Promise<User> {
+    const [user] = await db.update(users)
+      .set({ avatarUrl })
+      .where(eq(users.id, userId))
+      .returning();
+    if (!user) throw new Error("User not found");
+    return user;
+  }
 }
 
 export const storage = new DatabaseStorage();

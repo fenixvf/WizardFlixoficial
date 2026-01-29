@@ -53,7 +53,7 @@ export default function Home() {
                   className="max-w-2xl"
                 >
                   <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-sm font-bold mb-4 backdrop-blur-sm">
-                    #1 Trending Spell
+                    #1 Magia em Alta
                   </span>
                   <h1 className="text-5xl md:text-7xl font-rune text-white mb-4 drop-shadow-[0_0_10px_rgba(139,92,246,0.5)] leading-tight">
                     {featured.title || featured.name}
@@ -65,12 +65,12 @@ export default function Home() {
                   <div className="flex flex-wrap gap-4">
                     <Link href={`/details/${featured.title ? 'movie' : 'tv'}/${featured.id}`}>
                       <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-6 text-lg rounded-xl shadow-[0_0_20px_-5px_rgba(139,92,246,0.6)] border border-white/10">
-                        Open Grimoire
+                        Abrir Grimório
                       </Button>
                     </Link>
                     <Link href={`/watch/${featured.title ? 'movie' : 'tv'}/${featured.id}`}>
                       <Button size="lg" variant="outline" className="bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold px-8 py-6 text-lg rounded-xl backdrop-blur-sm">
-                        Cast Vision
+                        Lançar Visão
                       </Button>
                     </Link>
                   </div>
@@ -85,7 +85,7 @@ export default function Home() {
       <section className="container mx-auto px-4 -mt-20 relative z-10">
         <div className="flex items-center gap-3 mb-8">
           <Flame className="w-8 h-8 text-orange-500 fill-orange-500 animate-pulse" />
-          <h2 className="text-3xl font-rune text-white">Trending Spells</h2>
+          <h2 className="text-3xl font-rune text-white">Magias em Alta</h2>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">

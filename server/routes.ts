@@ -77,8 +77,6 @@ export async function registerRoutes(
   // Content Routes (TMDB Proxy)
   app.get(api.content.trending.path, async (req, res) => {
     try {
-      // Fetch Trending Anime (Animation + Japan)
-      // Discover TV: with_genres=16 (Animation), with_original_language=ja (Japanese), sort_by=popularity.desc
       const data = await fetchTMDB('/discover/tv', {
         with_genres: '16',
         with_original_language: 'ja',
@@ -88,6 +86,31 @@ export async function registerRoutes(
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Failed to fetch content" });
+    }
+  });
+
+  app.get("/api/content/genre/:id", async (req, res) => {
+    try {
+      const data = await fetchTMDB('/discover/movie', {
+        with_genres: `16,${req.params.id}`,
+        with_original_language: 'ja',
+        sort_by: 'popularity.desc'
+      });
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch genre content" });
+    }
+  });
+
+  app.post("/api/user/avatar", async (req, res) => {
+    // Basic implementation for avatar update
+    const { userId, avatarUrl } = req.body;
+    if (!userId || !avatarUrl) return res.status(400).json({ message: "Missing data" });
+    try {
+      const user = await storage.updateUserAvatar(userId, avatarUrl);
+      res.json(user);
+    } catch (err) {
+      res.status(404).json({ message: "User not found" });
     }
   });
 

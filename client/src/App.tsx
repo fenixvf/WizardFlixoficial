@@ -10,6 +10,7 @@ import Search from "@/pages/Search";
 import Details from "@/pages/Details";
 import Watch from "@/pages/Watch";
 import Grimoire from "@/pages/Grimoire";
+import Genres from "@/pages/Genres";
 import Auth from "@/pages/Auth";
 import NotFound from "@/pages/not-found";
 
@@ -23,6 +24,7 @@ function Router() {
           <Route path="/auth" component={Auth} />
           <Route path="/search" component={Search} />
           <Route path="/grimoire" component={Grimoire} />
+          <Route path="/genres" component={Genres} />
           <Route path="/details/:type/:id" component={Details} />
           <Route path="/watch/:type/:id/:season?/:episode?" component={Watch} />
           <Route component={NotFound} />
