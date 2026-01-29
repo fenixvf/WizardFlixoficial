@@ -12,6 +12,7 @@ import {
   Wand2,
   Heart
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,7 +39,13 @@ export function FloatingNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100]">
+    <motion.div 
+      drag
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={0.1}
+      whileDrag={{ scale: 1.1 }}
+      className="fixed bottom-6 right-6 z-[100] md:hidden"
+    >
       <DropdownMenu onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button 
@@ -112,6 +119,6 @@ export function FloatingNav() {
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </motion.div>
   );
 }

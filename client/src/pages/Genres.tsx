@@ -54,38 +54,35 @@ export default function Genres() {
         </div>
       </div>
 
-      <div className="space-y-12">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
         {filteredGenres.map((genre) => (
-          <GenreSection key={genre.id} genre={genre} />
+          <GenreItems key={genre.id} genreId={genre.id} />
         ))}
       </div>
     </div>
   );
 }
 
-function GenreSection({ genre }: { genre: { id: number; name: string } }) {
+function GenreItems({ genreId }: { genreId: number }) {
   const { data, isLoading } = useQuery<any>({
-    queryKey: [`/api/content/genre/${genre.id}`],
+    queryKey: [`/api/content/genre/${genreId}`],
   });
 
-  if (isLoading) return <Loader2 className="w-6 h-6 animate-spin text-primary" />;
+  if (isLoading) {
+    return Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="aspect-[2/3] rounded-xl bg-zinc-900 animate-pulse" />
+    ));
+  }
 
-  return (
-    <section>
-      <h2 className="text-2xl font-rune text-purple-300 mb-6">{genre.name}</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        {data?.results?.slice(0, 6).map((item: any) => (
-          <AnimeCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            name={item.name}
-            posterPath={item.poster_path}
-            rating={item.vote_average}
-            type={item.title ? 'movie' : 'tv'}
-          />
-        ))}
-      </div>
-    </section>
-  );
+  return data?.results?.map((item: any) => (
+    <AnimeCard
+      key={item.id}
+      id={item.id}
+      title={item.title}
+      name={item.name}
+      posterPath={item.poster_path}
+      rating={item.vote_average}
+      type={item.title ? 'movie' : 'tv'}
+    />
+  ));
 }

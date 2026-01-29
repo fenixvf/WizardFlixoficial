@@ -61,11 +61,11 @@ export function Navbar() {
           <NavLink href="/" active={isActive("/")} icon={<Sparkles className="w-4 h-4" />}>
             Início
           </NavLink>
-          <NavLink href="/grimoire" active={isActive("/grimoire")} icon={<ScrollText className="w-4 h-4" />}>
-            Grimório
-          </NavLink>
           <NavLink href="/genres" active={isActive("/genres")} icon={<Sparkles className="w-4 h-4" />}>
-            Gêneros
+            Catálogo
+          </NavLink>
+          <NavLink href="/grimoire" active={isActive("/grimoire")} icon={<ScrollText className="w-4 h-4" />}>
+            Favoritos
           </NavLink>
         </nav>
 
