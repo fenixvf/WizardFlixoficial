@@ -70,6 +70,13 @@ export const api = {
         200: z.object({ results: z.array(tmdbResultSchema) }),
       },
     },
+    newReleases: {
+      method: 'GET' as const,
+      path: '/api/content/new-releases',
+      responses: {
+        200: z.object({ results: z.array(tmdbResultSchema) }),
+      },
+    },
     search: {
       method: 'GET' as const,
       path: '/api/content/search',

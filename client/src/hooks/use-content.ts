@@ -13,6 +13,18 @@ export function useTrending() {
   });
 }
 
+// New Releases
+export function useNewReleases() {
+  return useQuery({
+    queryKey: [api.content.newReleases.path],
+    queryFn: async () => {
+      const res = await fetch(api.content.newReleases.path);
+      if (!res.ok) throw new Error("Failed to fetch new releases");
+      return api.content.newReleases.responses[200].parse(await res.json());
+    },
+  });
+}
+
 // Search Content
 export function useSearch(query: string) {
   return useQuery({

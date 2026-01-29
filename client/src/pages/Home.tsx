@@ -1,16 +1,31 @@
-import { useState, useEffect } from "react";
-import { useTrending } from "@/hooks/use-content";
+import { useState, useEffect, useRef } from "react";
+import { useTrending, useNewReleases } from "@/hooks/use-content";
 import { AnimeCard } from "@/components/AnimeCard";
-import { Loader2, Flame, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Flame, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
 export default function Home() {
   const { data, isLoading, error } = useTrending();
+  const { data: newReleasesData, isLoading: newReleasesLoading } = useNewReleases();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const featuredList = data?.results?.slice(0, 10) || [];
+  const newReleases = newReleasesData?.results || [];
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     if (featuredList.length === 0) return;
@@ -137,6 +152,63 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Novidades Section */}
+      {newReleases.length > 0 && (
+        <section className="container mx-auto px-4 mt-12 relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <Sparkles className="w-7 h-7 text-purple-400" />
+            <h2 className="text-2xl font-rune text-white">Novidades</h2>
+          </div>
+
+          <div className="relative group">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+              data-testid="button-scroll-left"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+
+            <div 
+              ref={scrollContainerRef}
+              className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {newReleasesLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex-shrink-0 w-40 h-60 bg-zinc-800/50 rounded-lg animate-pulse" />
+                ))
+              ) : (
+                newReleases.map((item) => (
+                  <div key={item.id} className="flex-shrink-0 w-40">
+                    <AnimeCard 
+                      id={item.id}
+                      title={item.title}
+                      name={item.name}
+                      posterPath={item.poster_path}
+                      rating={item.vote_average}
+                      type={item.title ? 'movie' : 'tv'}
+                    />
+                  </div>
+                ))
+              )}
+            </div>
+
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+              data-testid="button-scroll-right"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

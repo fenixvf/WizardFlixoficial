@@ -79,6 +79,23 @@ export async function registerRoutes(
     }
   });
 
+  app.get(api.content.newReleases.path, async (req, res) => {
+    try {
+      const data = await fetchTMDB('/discover/tv', {
+        with_genres: '16',
+        with_original_language: 'ja',
+        sort_by: 'first_air_date.desc',
+        'first_air_date.lte': new Date().toISOString().split('T')[0],
+        'vote_count.gte': '10'
+      });
+      const results = data.results?.slice(0, 10) || [];
+      res.json({ results });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to fetch new releases" });
+    }
+  });
+
   app.get("/api/content/genre/:id", async (req, res) => {
     try {
       const data = await fetchTMDB('/discover/movie', {
@@ -172,7 +189,7 @@ export async function registerRoutes(
 
   app.delete(api.favorites.remove.path, async (req, res) => {
     const userId = 1; // Mock
-    const tmdbId = parseInt(req.params.tmdbId);
+    const tmdbId = parseInt(req.params.tmdbId as string);
     await storage.removeFavorite(userId, tmdbId);
     res.status(204).send();
   });
