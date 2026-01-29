@@ -29,15 +29,17 @@ export function AppSidebar() {
                     isActive={location === item.path}
                     tooltip={item.label}
                     className={cn(
-                      "transition-all duration-300",
+                      "transition-all duration-300 min-h-[40px]",
                       location === item.path ? "bg-primary/20 text-primary" : "hover:bg-primary/10"
                     )}
                   >
-                    <Link href={item.path} className="flex items-center gap-4 px-2">
-                      <item.icon className="h-5 w-5 shrink-0" />
+                    <Link href={item.path} className="flex items-center gap-3 w-full">
+                      <div className="flex items-center justify-center w-6 h-6 shrink-0">
+                        <item.icon className="h-5 w-5" />
+                      </div>
                       <span className={cn(
-                        "transition-all duration-300 origin-left",
-                        isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-0 w-0"
+                        "transition-all duration-300 origin-left font-medium",
+                        isExpanded ? "opacity-100 scale-100 inline-block" : "hidden opacity-0 scale-0 w-0"
                       )}>
                         {item.label}
                       </span>

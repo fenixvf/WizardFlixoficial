@@ -46,11 +46,14 @@ export default function App() {
             <AppSidebar />
             <div className="relative flex flex-1 flex-col overflow-hidden">
               <header className="flex h-16 items-center justify-between border-b bg-background/50 px-4 backdrop-blur-md z-20">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <SidebarTrigger data-testid="button-sidebar-toggle" />
-                  <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                    Wizard Flix
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                    <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                      Wizard Flix
+                    </span>
+                  </div>
                 </div>
                 <ThemeToggle />
               </header>
