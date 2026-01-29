@@ -9,7 +9,7 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 async function fetchTMDB(endpoint: string, params: Record<string, string> = {}) {
   const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
-  params.api_key = process.env.TMDB_API_KEY || ''; 
+  params.api_key = process.env.VITE_TMDB_API_KEY || ''; 
   params.language = 'pt-BR'; 
   
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));

@@ -46,8 +46,8 @@ export default function App() {
             <AppSidebar />
             <div className="relative flex flex-1 flex-col overflow-hidden">
               <header className="flex h-16 items-center justify-between border-b bg-background/50 px-4 backdrop-blur-md z-20">
-                <SidebarTrigger data-testid="button-sidebar-toggle" />
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <SidebarTrigger data-testid="button-sidebar-toggle" />
                   <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                     Wizard Flix
                   </span>
