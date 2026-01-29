@@ -9,8 +9,8 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 async function fetchTMDB(endpoint: string, params: Record<string, string> = {}) {
   const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
-  params.api_key = process.env.TMDB_ACCESS_TOKEN || ''; // Fallback for safety, though Bearer is better if token is full
-  params.language = 'pt-BR'; // Portuguese default
+  params.api_key = process.env.TMDB_API_KEY || ''; 
+  params.language = 'pt-BR'; 
   
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
@@ -20,16 +20,6 @@ async function fetchTMDB(endpoint: string, params: Record<string, string> = {}) 
       'Content-Type': 'application/json',
     }
   };
-
-  // If we have a Bearer token (Read Access Token), use it
-  if (process.env.TMDB_ACCESS_TOKEN && process.env.TMDB_ACCESS_TOKEN.length > 50) {
-      options.headers = {
-        ...options.headers,
-        'Authorization': `Bearer ${process.env.TMDB_ACCESS_TOKEN}`
-      };
-      // Remove api_key param if using Bearer to avoid confusion, though usually safe
-      url.searchParams.delete('api_key');
-  }
 
   const res = await fetch(url.toString(), options);
   if (!res.ok) {
@@ -119,9 +109,6 @@ export async function registerRoutes(
       const query = req.query.query as string;
       if (!query) return res.status(400).json({ message: "Query required" });
 
-      // Search Multi but maybe filter results client side? 
-      // Or search TV with query and filter for anime?
-      // Let's use search/multi and let the frontend show what matches.
       const data = await fetchTMDB('/search/multi', { query });
       res.json(data);
     } catch (err) {
