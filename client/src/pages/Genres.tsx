@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimeCard } from "@/components/AnimeCard";
 import { Loader2, Sparkles, Sword, Ghost, Wand2, Heart, Search, Flame } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 
 const GENRES = [
@@ -16,12 +17,21 @@ const GENRES = [
 
 export default function Genres() {
   const [location, setLocation] = useLocation();
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchString = useSearch();
+  const searchParams = new URLSearchParams(searchString);
   const selectedId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
 
   const filteredGenres = selectedId 
     ? GENRES.filter(g => g.id === selectedId)
     : GENRES;
+
+  const handleGenreClick = (genreId: number) => {
+    setLocation(`/genres?id=${genreId}`);
+  };
+
+  const handleClear = () => {
+    setLocation('/genres');
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-20 container mx-auto px-4">
@@ -34,8 +44,9 @@ export default function Genres() {
               key={g.id}
               variant={selectedId === g.id ? "default" : "outline"}
               size="sm"
-              onClick={() => setLocation(`/genres?id=${g.id}`)}
+              onClick={() => handleGenreClick(g.id)}
               className="rounded-full"
+              data-testid={`button-genre-${g.id}`}
             >
               <g.icon className="w-4 h-4 mr-2" />
               {g.name}
@@ -45,8 +56,9 @@ export default function Genres() {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setLocation('/genres')}
+              onClick={handleClear}
               className="text-muted-foreground"
+              data-testid="button-clear-genre"
             >
               Limpar
             </Button>

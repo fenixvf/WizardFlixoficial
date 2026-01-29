@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { 
   Plus, 
@@ -37,6 +37,28 @@ const GENRES = [
 
 export function FloatingNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
+    }
+  };
+
+  const handleDragEnd = () => {
+    dragTimeoutRef.current = setTimeout(() => {
+      setIsDragging(false);
+    }, 200);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   return (
     <motion.div 
@@ -44,10 +66,16 @@ export function FloatingNav() {
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.1}
       whileDrag={{ scale: 1.1 }}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       className="fixed bottom-6 right-6 z-[100] md:hidden"
     >
-      <DropdownMenu onOpenChange={setIsOpen}>
-        <DropdownMenuTrigger asChild>
+      <DropdownMenu onOpenChange={(open) => {
+        if (!isDragging) {
+          setIsOpen(open);
+        }
+      }}>
+        <DropdownMenuTrigger asChild disabled={isDragging}>
           <Button 
             size="icon" 
             className={`
@@ -56,9 +84,15 @@ export function FloatingNav() {
               border-2 border-white/10
             `}
             data-testid="button-fab"
+            onClick={handleClick}
+            onPointerDown={(e) => {
+              if (isDragging) {
+                e.preventDefault();
+              }
+            }}
           >
             <Plus className="w-8 h-8 text-white" />
-            {!isOpen && (
+            {!isOpen && !isDragging && (
               <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
             )}
           </Button>
