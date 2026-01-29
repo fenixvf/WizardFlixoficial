@@ -18,7 +18,11 @@ Preferred communication style: Simple, everyday language.
 - **Animations**: Framer Motion for UI transitions
 - **Build Tool**: Vite
 
-The frontend follows a page-based structure with reusable components. Key pages include Home (trending content with hero carousel), Search, Details, Watch (embedded player), Grimoire (favorites), and Genres.
+The frontend follows a page-based structure with reusable components. Key pages include Home (trending content with hero carousel + "Novidades" horizontal section), Search, Details, Watch (embedded player), Grimoire (favorites), and Genres.
+
+### Navigation
+- **Desktop**: Header navigation with buttons (Início, Catálogo, Favoritos)
+- **Mobile**: Side drawer menu accessed via hamburger button in header
 
 ### Backend Architecture
 - **Framework**: Express 5 on Node.js
