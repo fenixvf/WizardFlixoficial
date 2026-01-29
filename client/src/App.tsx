@@ -6,6 +6,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BookOpen } from "lucide-react";
 
 // Pages
 import Home from "@/pages/Home";
