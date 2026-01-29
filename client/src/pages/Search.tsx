@@ -12,8 +12,8 @@ export default function Search() {
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 container mx-auto">
       <div className="max-w-2xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl font-rune text-white mb-2">Cast a Summoning Spell</h1>
-        <p className="text-muted-foreground mb-8">Find the anime you seek within the archives.</p>
+        <h1 className="text-4xl font-rune text-white mb-2">Conjurando Feitiço de Busca</h1>
+        <p className="text-muted-foreground mb-8">Encontre o anime que você procura nos arquivos.</p>
         
         <div className="relative group">
           <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg group-hover:bg-primary/30 transition-all duration-500" />
@@ -22,7 +22,7 @@ export default function Search() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter anime name..."
+              placeholder="Digite o nome do anime..."
               className="border-none bg-transparent text-lg focus-visible:ring-0 placeholder:text-zinc-600 h-12"
               autoFocus
             />
@@ -59,7 +59,7 @@ export default function Search() {
       {!isLoading && query && data?.results.length === 0 && (
         <div className="text-center py-20 text-muted-foreground">
           <Sparkles className="w-12 h-12 mx-auto mb-4 text-zinc-700" />
-          <p>The archives contain no knowledge of this spell.</p>
+          <p>Os arquivos não possuem conhecimento sobre este feitiço.</p>
         </div>
       )}
     </div>

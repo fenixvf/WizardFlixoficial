@@ -5,28 +5,26 @@ import { Button } from "@/components/ui/button";
 
 export default function Watch() {
   const [, params] = useRoute("/watch/:type/:id/:season?/:episode?");
-  const type = params?.type as 'movie' | 'tv';
-  const id = Number(params?.id);
-  const season = params?.season ? Number(params.season) : 1;
-  const episode = params?.episode ? Number(params.episode) : 1;
+  const type = (params as any)?.type as 'movie' | 'tv';
+  const id = Number((params as any)?.id);
+  const season = (params as any)?.season ? Number((params as any).season) : 1;
+  const episode = (params as any)?.episode ? Number((params as any).episode) : 1;
 
   // We fetch details to get IMDB ID for movies or episode count for TV
   const { data: details } = useContentDetails(type, id);
 
   const getEmbedUrl = () => {
     if (type === 'movie') {
-      // Prefer IMDB ID if available, otherwise fallback might be needed but API usually takes IMDB
-      // Assuming details has external_ids or we use TMDB ID if supported by this specific player API variant
-      // The prompt says: https://playerflixapi.com/filme/{imdb_id}
-      // Often these APIs support TMDB ID too or we need to rely on the passed param.
-      // Let's try to use the IMDB ID from details if available.
       const imdbId = details?.imdb_id;
       if (imdbId) return `https://playerflixapi.com/filme/${imdbId}`;
-      return `https://playerflixapi.com/filme/${id}`; // Fallback, might not work depending on API strictness
+      return `https://playerflixapi.com/filme/${id}`;
     } else {
-      // Series: https://playerflixapi.com/serie/{tmdb_id}/{season}/{episode}
       return `https://playerflixapi.com/serie/${id}/${season}/${episode}`;
     }
+  };
+
+  const openPlayer = () => {
+    window.open(getEmbedUrl(), '_blank');
   };
 
   return (
@@ -36,28 +34,34 @@ export default function Watch() {
         <Link href={`/details/${type}/${id}`}>
           <Button variant="ghost" className="text-zinc-400 hover:text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Details
+            Voltar para Detalhes
           </Button>
         </Link>
         <div className="ml-4 border-l border-white/10 pl-4">
           <h1 className="font-rune text-lg text-white">
-            {details ? (details.title || details.name) : "Loading..."}
+            {details ? (details.title || details.name) : "Carregando..."}
           </h1>
           {type === 'tv' && (
-            <p className="text-xs text-primary">Season {season} • Episode {episode}</p>
+            <p className="text-xs text-primary">Temporada {season} • Episódio {episode}</p>
           )}
         </div>
       </div>
 
       {/* Player Container */}
-      <div className="flex-1 relative bg-black flex items-center justify-center">
-        <iframe
-          src={getEmbedUrl()}
-          className="w-full h-full absolute inset-0"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; encrypted-media"
-        />
+      <div className="flex-1 relative bg-black flex flex-col items-center justify-center p-8 text-center">
+        <div className="max-w-md space-y-6">
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border border-primary/20">
+            <Play className="w-12 h-12 text-primary fill-primary" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-rune text-white mb-2">Pronto para Assistir</h2>
+            <p className="text-zinc-400">Clique no botão abaixo para abrir o player mágico em uma nova aba e evitar anúncios intrusivos.</p>
+          </div>
+          <Button onClick={openPlayer} size="lg" className="w-full bg-primary hover:bg-primary/90 text-white py-8 text-xl font-bold rounded-2xl shadow-lg shadow-primary/20">
+            <Play className="w-6 h-6 mr-3 fill-current" />
+            Abrir Player Mágico
+          </Button>
+        </div>
       </div>
 
       {/* Episode Navigation (TV Only) */}
@@ -65,10 +69,10 @@ export default function Watch() {
         <div className="bg-zinc-950 border-t border-white/10 p-4">
           <div className="container mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-rune text-xl text-white">Episodes</h3>
+              <h3 className="font-rune text-xl text-white">Episódios</h3>
               <Link href={`/details/${type}/${id}`}>
                  <Button size="sm" variant="outline" className="text-xs border-white/10 hover:bg-white/5">
-                   <LayoutGrid className="w-3 h-3 mr-2" /> All Seasons
+                   <LayoutGrid className="w-3 h-3 mr-2" /> Todas as Temporadas
                  </Button>
               </Link>
             </div>

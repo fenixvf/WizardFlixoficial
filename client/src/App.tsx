@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Navbar } from "@/components/Navbar";
+import { FloatingNav } from "@/components/FloatingNav";
 
 // Pages
 import Home from "@/pages/Home";
@@ -30,6 +31,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
+      <FloatingNav />
     </div>
   );
 }
