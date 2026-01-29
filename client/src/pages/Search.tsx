@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearch } from "@/hooks/use-content";
 import { AnimeCard } from "@/components/AnimeCard";
 import { Input } from "@/components/ui/input";
 import { Search as SearchIcon, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 
 export default function Search() {
-  const [query, setQuery] = useState("");
-  const { data, isLoading } = useSearch(query);
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(window.location.search);
+  const urlQuery = searchParams.get('q') || "";
+  const [query, setQuery] = useState(urlQuery);
+  const { data, isLoading } = useSearch(query || urlQuery);
+
+  useEffect(() => {
+    if (urlQuery && urlQuery !== query) {
+      setQuery(urlQuery);
+    }
+  }, [urlQuery]);
 
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 container mx-auto">

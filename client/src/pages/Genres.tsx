@@ -15,7 +15,7 @@ const GENRES = [
 ];
 
 export default function Genres() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const selectedId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
 
@@ -34,7 +34,7 @@ export default function Genres() {
               key={g.id}
               variant={selectedId === g.id ? "default" : "outline"}
               size="sm"
-              onClick={() => window.history.pushState({}, '', `/genres?id=${g.id}`)}
+              onClick={() => setLocation(`/genres?id=${g.id}`)}
               className="rounded-full"
             >
               <g.icon className="w-4 h-4 mr-2" />
@@ -45,7 +45,7 @@ export default function Genres() {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => window.history.pushState({}, '', '/genres')}
+              onClick={() => setLocation('/genres')}
               className="text-muted-foreground"
             >
               Limpar

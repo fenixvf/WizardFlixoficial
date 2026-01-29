@@ -23,10 +23,6 @@ export default function Watch() {
     }
   };
 
-  const openPlayer = () => {
-    window.open(getEmbedUrl(), '_blank');
-  };
-
   return (
     <div className="min-h-screen bg-black flex flex-col">
       {/* Header */}
@@ -48,20 +44,14 @@ export default function Watch() {
       </div>
 
       {/* Player Container */}
-      <div className="flex-1 relative bg-black flex flex-col items-center justify-center p-8 text-center">
-        <div className="max-w-md space-y-6">
-          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto border border-primary/20">
-            <Play className="w-12 h-12 text-primary fill-primary" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-rune text-white mb-2">Pronto para Assistir</h2>
-            <p className="text-zinc-400">Clique no botão abaixo para abrir o player mágico em uma nova aba e evitar anúncios intrusivos.</p>
-          </div>
-          <Button onClick={openPlayer} size="lg" className="w-full bg-primary hover:bg-primary/90 text-white py-8 text-xl font-bold rounded-2xl shadow-lg shadow-primary/20">
-            <Play className="w-6 h-6 mr-3 fill-current" />
-            Abrir Player Mágico
-          </Button>
-        </div>
+      <div className="flex-1 relative bg-black flex items-center justify-center">
+        <iframe
+          src={getEmbedUrl()}
+          className="w-full h-full absolute inset-0"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; encrypted-media"
+        />
       </div>
 
       {/* Episode Navigation (TV Only) */}

@@ -104,28 +104,8 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Hero Navigation Controls */}
-        <div className="absolute bottom-10 right-4 md:right-10 flex gap-4 z-20">
-          <Button 
-            onClick={prevFeatured}
-            variant="outline" 
-            size="icon" 
-            className="w-12 h-12 rounded-full bg-black/50 border-white/20 text-white hover:bg-primary/40"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </Button>
-          <Button 
-            onClick={nextFeatured}
-            variant="outline" 
-            size="icon" 
-            className="w-12 h-12 rounded-full bg-black/50 border-white/20 text-white hover:bg-primary/40"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </Button>
-        </div>
-
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        {/* Carousel Indicators - Moved to bottom of Hero */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {featuredList.map((_, idx) => (
             <button
               key={idx}
@@ -137,7 +117,7 @@ export default function Home() {
       </section>
 
       {/* Trending Section */}
-      <section className="container mx-auto px-4 -mt-20 relative z-10">
+      <section className="container mx-auto px-4 mt-8 relative z-10">
         <div className="flex items-center gap-3 mb-8">
           <Flame className="w-8 h-8 text-orange-500 fill-orange-500 animate-pulse" />
           <h2 className="text-3xl font-rune text-white">Mais Obras em Alta</h2>
