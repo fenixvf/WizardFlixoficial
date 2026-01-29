@@ -1,0 +1,59 @@
+import { Link } from "wouter";
+import { Star } from "lucide-react";
+import { motion } from "framer-motion";
+
+interface AnimeCardProps {
+  id: number;
+  title?: string;
+  name?: string;
+  posterPath: string | null;
+  rating?: number;
+  type: 'movie' | 'tv';
+}
+
+export function AnimeCard({ id, title, name, posterPath, rating, type }: AnimeCardProps) {
+  const displayTitle = title || name || "Unknown Spell";
+  const imageUrl = posterPath 
+    ? `https://image.tmdb.org/t/p/w500${posterPath}` 
+    : "https://placehold.co/500x750/1a1a1a/8B5CF6?text=No+Poster"; // Fallback magical placeholder
+
+  return (
+    <Link href={`/details/${type}/${id}`}>
+      <motion.div 
+        whileHover={{ y: -8, scale: 1.02 }}
+        className="group relative cursor-pointer w-full"
+      >
+        {/* Card Glow Effect */}
+        <div className="absolute -inset-0.5 bg-gradient-to-b from-primary/50 to-purple-900/50 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-500"></div>
+        
+        <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/10 shadow-2xl">
+          <img 
+            src={imageUrl} 
+            alt={displayTitle}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+          />
+          
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+
+          {/* Content */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+            <h3 className="font-rune text-lg text-white leading-tight line-clamp-2 drop-shadow-md mb-1">
+              {displayTitle}
+            </h3>
+            
+            {rating !== undefined && (
+              <div className="flex items-center gap-1 text-yellow-400">
+                <Star className="w-3.5 h-3.5 fill-current" />
+                <span className="text-xs font-bold font-sans text-yellow-200">
+                  {rating.toFixed(1)}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </Link>
+  );
+}

@@ -83,6 +83,7 @@ export default {
         },
       },
       fontFamily: {
+        rune: ["'MedievalSharp', cursive"],
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
