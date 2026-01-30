@@ -78,7 +78,8 @@ function MainLayout() {
                     (user as any).nameColor === 'rgb-pulse' && "animate-rgb",
                     (user as any).nameColor === 'rgb-fire' && "animate-rgb-fire",
                     (user as any).nameColor === 'rgb-ice' && "animate-rgb-ice",
-                    (user as any).nameColor === 'rgb-nature' && "animate-rgb-nature"
+                    (user as any).nameColor === 'rgb-nature' && "animate-rgb-nature",
+                    !(user as any).nameColor || (user as any).nameColor === 'default' ? "text-primary" : ""
                   )}>
                     {user.username.length > 12 ? `${user.username.substring(0, 12)}...` : user.username}
                   </span>
