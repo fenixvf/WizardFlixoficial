@@ -260,7 +260,7 @@ export async function registerRoutes(
       
       const fandubItem = fandub.fandubs.find((f: any) => f.id === tmdbId);
       if (!fandubItem) {
-        return res.status(404).json({ message: "Fandub not found" });
+        return res.status(404).json({ message: "Fandub não encontrado no catálogo" });
       }
       
       const type = fandubItem.type || 'tv';
@@ -268,18 +268,36 @@ export async function registerRoutes(
         append_to_response: 'external_ids,videos,credits'
       });
       
+      // Converte o link do Drive para o formato de visualização (preview) se necessário
+      const formatDriveUrl = (url: string) => {
+        if (url.includes('drive.google.com') && !url.endsWith('/preview')) {
+          return url.replace(/\/view\?usp=sharing|\/view/g, '') + '/preview';
+        }
+        return url;
+      };
+
+      const formattedSeasons: any = {};
+      if (fandubItem.seasons) {
+        for (const sId in fandubItem.seasons) {
+          formattedSeasons[sId] = {};
+          for (const eId in fandubItem.seasons[sId]) {
+            formattedSeasons[sId][eId] = formatDriveUrl(fandubItem.seasons[sId][eId]);
+          }
+        }
+      }
+
       res.json({
         ...tmdbData,
         isFandub: true,
         type: type,
-        seasons: fandubItem.seasons,
-        embedUrl: fandubItem.embedUrl,
+        seasons: formattedSeasons,
+        embedUrl: fandubItem.embedUrl ? formatDriveUrl(fandubItem.embedUrl) : null,
         studio: fandubItem.studio,
         fandubCast: fandubItem.cast
       });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Failed to fetch fandub content" });
+      res.status(500).json({ message: "Erro ao buscar conteúdo do fandub" });
     }
   });
 

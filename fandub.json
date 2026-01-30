@@ -2,22 +2,43 @@
   "fandubs": [
     {
       "id": 95479,
+      "type": "tv",
       "title": "Jujutsu Kaisen",
-      "embedUrl": "https://drive.google.com/file/d/EXAMPLE_ID/preview",
       "studio": {
         "name": "Studio Exemplo",
         "socialLink": "https://instagram.com/exemplo"
+      },
+      "seasons": {
+        "1": {
+          "1": "https://www.youtube.com/embed/example-s1-e1",
+          "2": "https://www.youtube.com/embed/example-s1-e2"
+        },
+        "2": {
+          "1": "https://www.youtube.com/embed/example-s2-e1"
+        }
       },
       "cast": [
         {
           "character": "Yuji Itadori",
           "voiceActor": "Nome do Dublador 1",
-          "characterImage": "/t/p/w185/characterImagePath.jpg"
-        },
+          "characterImage": "https://image.tmdb.org/t/p/w185/characterImagePath.jpg"
+        }
+      ]
+    },
+    {
+      "id": 550,
+      "type": "movie",
+      "title": "Clube da Luta",
+      "studio": {
+        "name": "Studio Exemplo",
+        "socialLink": "https://instagram.com/exemplo"
+      },
+      "embedUrl": "https://www.youtube.com/embed/fight-club-example",
+      "cast": [
         {
-          "character": "Megumi Fushiguro",
-          "voiceActor": "Nome do Dublador 2",
-          "characterImage": "/t/p/w185/characterImagePath.jpg"
+          "character": "Tyler Durden",
+          "voiceActor": "Voz Exemplo",
+          "characterImage": "https://image.tmdb.org/t/p/w185/characterImagePath.jpg"
         }
       ]
     }
