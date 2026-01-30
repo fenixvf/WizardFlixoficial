@@ -6,6 +6,8 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserProfile(userId: number, data: { username?: string; nameColor?: string }): Promise<User | undefined>;
+  updateUserAvatar(userId: number, avatarUrl: string): Promise<User>;
   
   getFavorites(userId: number): Promise<Favorite[]>;
   addFavorite(favorite: InsertFavorite): Promise<Favorite>;
@@ -52,6 +54,14 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     if (!user) throw new Error("User not found");
+    return user;
+  }
+
+  async updateUserProfile(userId: number, data: { username?: string; nameColor?: string }): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set(data)
+      .where(eq(users.id, userId))
+      .returning();
     return user;
   }
 }

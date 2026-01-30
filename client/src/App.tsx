@@ -32,7 +32,9 @@ function Router() {
       <Route path="/search" component={Search} />
       <Route path="/grimoire" component={Grimoire} />
       <Route path="/genres" component={Genres} />
+      <Route path="/details/fandub/:id" component={Details} />
       <Route path="/details/:type/:id" component={Details} />
+      <Route path="/watch/fandub/:id/:season?/:episode?" component={Watch} />
       <Route path="/watch/:type/:id/:season?/:episode?" component={Watch} />
       <Route path="/profile" component={Profile} />
       <Route component={NotFound} />

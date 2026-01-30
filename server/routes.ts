@@ -82,7 +82,7 @@ export async function registerRoutes(
       
       if (animeIds.length > 0) {
         const results = await Promise.all(
-          animeIds.slice(0, 20).map(id => 
+          animeIds.slice(0, 20).map((id: number) => 
             fetchTMDB(`/tv/${id}`).catch(() => null)
           )
         );
@@ -164,15 +164,11 @@ export async function registerRoutes(
   });
 
   app.patch("/api/user/profile", async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Não autorizado" });
-    const { username, nameColor } = req.body;
+    const { userId, username, nameColor } = req.body;
+    if (!userId) return res.status(401).json({ message: "Não autorizado" });
     
     try {
-      const [updatedUser] = await db.update(users)
-        .set({ username, nameColor })
-        .where(eq(users.id, req.user!.id))
-        .returning();
-      
+      const updatedUser = await storage.updateUserProfile(userId, { username, nameColor });
       if (!updatedUser) return res.status(404).json({ message: "Usuário não encontrado" });
       res.json(updatedUser);
     } catch (err) {
@@ -221,6 +217,66 @@ export async function registerRoutes(
       res.json(data);
     } catch (err) {
       res.status(404).json({ message: "Content not found" });
+    }
+  });
+
+  // Fandub Routes
+  app.get("/api/fandub", async (req, res) => {
+    try {
+      const fandubPath = path.resolve(process.cwd(), 'fandub.json');
+      const fandubData = await fs.readFile(fandubPath, 'utf-8');
+      const fandub = JSON.parse(fandubData);
+      
+      const results = await Promise.all(
+        fandub.fandubs.map(async (item: any) => {
+          try {
+            const tmdbData = await fetchTMDB(`/tv/${item.id}`);
+            return {
+              ...tmdbData,
+              isFandub: true,
+              embedUrl: item.embedUrl,
+              studio: item.studio,
+              cast: item.cast
+            };
+          } catch {
+            return null;
+          }
+        })
+      );
+      
+      res.json({ results: results.filter(r => r !== null) });
+    } catch (err) {
+      console.error(err);
+      res.json({ results: [] });
+    }
+  });
+
+  app.get("/api/fandub/:id", async (req, res) => {
+    try {
+      const tmdbId = parseInt(req.params.id);
+      const fandubPath = path.resolve(process.cwd(), 'fandub.json');
+      const fandubData = await fs.readFile(fandubPath, 'utf-8');
+      const fandub = JSON.parse(fandubData);
+      
+      const fandubItem = fandub.fandubs.find((f: any) => f.id === tmdbId);
+      if (!fandubItem) {
+        return res.status(404).json({ message: "Fandub not found" });
+      }
+      
+      const tmdbData = await fetchTMDB(`/tv/${tmdbId}`, {
+        append_to_response: 'external_ids,videos,credits'
+      });
+      
+      res.json({
+        ...tmdbData,
+        isFandub: true,
+        embedUrl: fandubItem.embedUrl,
+        studio: fandubItem.studio,
+        fandubCast: fandubItem.cast
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to fetch fandub content" });
     }
   });
 

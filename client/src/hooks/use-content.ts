@@ -50,8 +50,31 @@ export function useContentDetails(type: 'movie' | 'tv', id: number) {
       const url = buildUrl(api.content.details.path, { type, id });
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to read the grimoire page");
-      // The schema returns z.any() for details because TMDB objects are complex
-      // We return the raw JSON
+      return await res.json();
+    },
+  });
+}
+
+// Fandub Content
+export function useFandubList() {
+  return useQuery({
+    queryKey: ['/api/fandub'],
+    queryFn: async () => {
+      const res = await fetch('/api/fandub');
+      if (!res.ok) throw new Error("Failed to fetch fandub content");
+      return await res.json();
+    },
+  });
+}
+
+// Fandub Details
+export function useFandubDetails(id: number) {
+  return useQuery({
+    queryKey: ['/api/fandub', id],
+    enabled: id > 0,
+    queryFn: async () => {
+      const res = await fetch(`/api/fandub/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch fandub details");
       return await res.json();
     },
   });

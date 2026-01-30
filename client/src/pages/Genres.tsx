@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimeCard } from "@/components/AnimeCard";
-import { Loader2, Sparkles, Sword, Ghost, Wand2, Heart, Search, Flame } from "lucide-react";
+import { Loader2, Sparkles, Sword, Ghost, Wand2, Heart, Search, Flame, Mic } from "lucide-react";
 import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useFandubList } from "@/hooks/use-content";
 
 const GENRES = [
   { id: 16, name: "Animação", icon: Sparkles },
@@ -13,6 +13,7 @@ const GENRES = [
   { id: 10762, name: "Kids", icon: Heart },
   { id: 9648, name: "Mistério", icon: Search },
   { id: 18, name: "Drama", icon: Flame },
+  { id: -1, name: "Fandub", icon: Mic },
 ];
 
 export default function Genres() {
@@ -68,11 +69,34 @@ export default function Genres() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
         {filteredGenres.map((genre) => (
-          <GenreItems key={genre.id} genreId={genre.id} />
+          genre.id === -1 ? <FandubItems key={genre.id} /> : <GenreItems key={genre.id} genreId={genre.id} />
         ))}
       </div>
     </div>
   );
+}
+
+function FandubItems() {
+  const { data, isLoading } = useFandubList();
+
+  if (isLoading) {
+    return Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="aspect-[2/3] rounded-xl bg-zinc-900 animate-pulse" />
+    ));
+  }
+
+  return data?.results?.map((item: any) => (
+    <AnimeCard
+      key={item.id}
+      id={item.id}
+      title={item.title}
+      name={item.name}
+      posterPath={item.poster_path}
+      rating={item.vote_average}
+      type="tv"
+      isFandub={true}
+    />
+  ));
 }
 
 function GenreItems({ genreId }: { genreId: number }) {
