@@ -55,7 +55,13 @@ function MainLayout() {
               <div className="flex items-center gap-4">
                 <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
                 <div className="flex items-center gap-3">
-                  <img src={logoPng} alt="Wizard Flix Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                  <div className="h-10 w-10 flex items-center justify-center overflow-hidden rounded-lg bg-primary/10 shadow-inner">
+                    <img 
+                      src={logoPng} 
+                      alt="Wizard Flix Logo" 
+                      className="h-full w-full object-cover scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" 
+                    />
+                  </div>
                   <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
                     Wizard Flix
                   </span>
