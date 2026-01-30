@@ -15,13 +15,17 @@ export default function Watch() {
 
   const getEmbedUrl = () => {
     if (type === 'movie') {
-      const imdbId = details?.imdb_id;
-      if (imdbId) return `https://playerflixapi.com/filme/${imdbId}`;
-      return `https://playerflixapi.com/filme/${id}`;
+      const imdbId = details?.imdb_id || details?.external_ids?.imdb_id;
+      if (imdbId) return `https://embed.playerflixapi.com/filme/${imdbId}`;
+      return `https://embed.playerflixapi.com/filme/${id}`;
     } else {
-      return `https://playerflixapi.com/serie/${id}/${season}/${episode}`;
+      const tmdbId = id;
+      // Usando o domínio oficial sugerido pela API para séries
+      return `https://playerflixapi.com/serie/${tmdbId}/${season}/${episode}`;
     }
   };
+
+  const videoUrl = getEmbedUrl();
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
@@ -47,7 +51,8 @@ export default function Watch() {
       <div className="flex-1 flex flex-col items-center justify-center p-2 md:p-6 bg-black/40">
         <div className="relative w-full max-w-[1400px] aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.15)] border border-white/10 group">
           <iframe
-            src={getEmbedUrl()}
+            key={`${videoUrl}-${season}-${episode}`}
+            src={videoUrl}
             title={details ? (details.title || details.name) : "Video Player"}
             className="absolute top-0 left-0 w-full h-full border-0 z-10"
             /* Atributos essenciais para funcionamento da API externa */
