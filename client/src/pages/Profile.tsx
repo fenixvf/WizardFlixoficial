@@ -25,7 +25,7 @@ export default function Profile() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       username: user?.username || "",
-      nameColor: user?.nameColor || "default",
+      nameColor: (user as any)?.nameColor || "default",
     },
   });
 

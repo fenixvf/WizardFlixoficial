@@ -75,15 +75,14 @@ function MainLayout() {
                 {user && (
                   <span className={cn(
                     "text-sm font-bold transition-all duration-300",
-                    user.nameColor === 'rgb-pulse' && "animate-rgb",
-                    user.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                    user.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                    user.nameColor === 'rgb-nature' && "animate-rgb-nature"
+                    (user as any).nameColor === 'rgb-pulse' && "animate-rgb",
+                    (user as any).nameColor === 'rgb-fire' && "animate-rgb-fire",
+                    (user as any).nameColor === 'rgb-ice' && "animate-rgb-ice",
+                    (user as any).nameColor === 'rgb-nature' && "animate-rgb-nature"
                   )}>
                     {user.username.length > 12 ? `${user.username.substring(0, 12)}...` : user.username}
                   </span>
                 )}
-                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
