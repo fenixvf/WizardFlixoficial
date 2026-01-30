@@ -16,8 +16,8 @@ export default function Watch() {
   const getEmbedUrl = () => {
     if (type === 'movie') {
       const imdbId = details?.imdb_id || details?.external_ids?.imdb_id;
-      if (imdbId) return `https://embed.playerflixapi.com/filme/${imdbId}`;
-      return `https://embed.playerflixapi.com/filme/${id}`;
+      if (imdbId) return `https://playerflixapi.com/filme/${imdbId}`;
+      return `https://playerflixapi.com/filme/${id}`;
     } else {
       const tmdbId = id;
       // Usando o domínio oficial sugerido pela API para séries
