@@ -121,6 +121,25 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/user/profile", async (req, res) => {
+    // In a real app, use sessions to get userId. For now, we mock userId 1
+    const userId = 1; 
+    const { username, nameColor } = req.body;
+    
+    try {
+      const [updatedUser] = await db.update(users)
+        .set({ username, nameColor })
+        .where(eq(users.id, userId))
+        .returning();
+      
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      res.json(updatedUser);
+    } catch (err) {
+      console.error(err);
+      res.status(400).json({ message: "Username already taken or invalid data" });
+    }
+  });
+
   app.get(api.content.search.path, async (req, res) => {
     try {
       const query = req.query.query as string;

@@ -20,6 +20,7 @@ import Watch from "@/pages/Watch";
 import Grimoire from "@/pages/Grimoire";
 import Genres from "@/pages/Genres";
 import Auth from "@/pages/Auth";
+import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/genres" component={Genres} />
       <Route path="/details/:type/:id" component={Details} />
       <Route path="/watch/:type/:id/:season?/:episode?" component={Watch} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -68,7 +70,16 @@ function MainLayout() {
                 </div>
               </div>
               
-              <DropdownMenu>
+              <div className="flex items-center gap-3">
+                {user && (
+                  <span className={cn(
+                    "text-sm font-bold transition-all duration-300",
+                    user.nameColor === 'rgb-pulse' && "animate-rgb"
+                  )}>
+                    {user.username.length > 12 ? `${user.username.substring(0, 12)}...` : user.username}
+                  </span>
+                )}
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
                     <User className="h-5 w-5 text-primary" />
