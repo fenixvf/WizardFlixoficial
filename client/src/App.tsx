@@ -4,9 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeToggle } from "./components/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BookOpen } from "lucide-react";
+import { BookOpen, User } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 // Pages
 import Home from "@/pages/Home";
@@ -46,17 +48,44 @@ export default function App() {
           <div className="flex h-screen w-full overflow-hidden bg-background">
             <AppSidebar />
             <div className="relative flex flex-1 flex-col overflow-hidden">
-              <header className="flex h-16 items-center justify-between border-b bg-background/50 px-4 backdrop-blur-md z-20">
-                <div className="flex items-center gap-3">
-                  <SidebarTrigger data-testid="button-sidebar-toggle" />
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-6 w-6 text-primary" />
-                    <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+              <header className="flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="h-6 w-6 text-primary drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                    <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
                       Wizard Flix
                     </span>
                   </div>
                 </div>
-                <ThemeToggle />
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
+                      <User className="h-5 w-5 text-primary" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
+                    <DropdownMenuLabel className="font-bold text-primary">Minha Conta Mágica</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-primary/10" />
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                      <Link href="/profile" className="w-full flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Perfil</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                      <Link href="/grimoire" className="w-full flex items-center">
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        <span>Meu Grimório (Lista)</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-primary/10" />
+                    <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer">
+                      Sair da sessão
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </header>
               <main className="flex-1 overflow-y-auto">
                 <Router />

@@ -78,7 +78,7 @@ export default function Details() {
               <Link href={`/watch/${type}/${id}`}>
                 <Button className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-xl">
                   <Play className="w-5 h-5 mr-2 fill-white" />
-                  Cast Vision
+                  Assistir agora
                 </Button>
               </Link>
               
@@ -90,11 +90,11 @@ export default function Details() {
               >
                 {isFavorite ? (
                   <>
-                    <Check className="w-5 h-5 mr-2" /> In Grimoire
+                    <Check className="w-5 h-5 mr-2" /> No Grimório
                   </>
                 ) : (
                   <>
-                    <Plus className="w-5 h-5 mr-2" /> Add to Grimoire
+                    <Plus className="w-5 h-5 mr-2" /> Adicionar ao Grimório
                   </>
                 )}
               </Button>
@@ -141,11 +141,11 @@ export default function Details() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-xl font-bold font-rune mb-2 text-purple-300">Synopsis</h2>
+              <h2 className="text-xl font-bold font-rune mb-2 text-purple-300">Sinopse</h2>
               <p className="text-lg leading-relaxed text-gray-300/90">{anime.overview}</p>
             </motion.div>
 
-            {/* TV Show Seasons */}
+            {/* Temporadas (Seasons) */}
             {type === 'tv' && anime.seasons && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -153,7 +153,7 @@ export default function Details() {
                 transition={{ delay: 0.3 }}
                 className="pt-6"
               >
-                <h2 className="text-2xl font-rune mb-4 text-white">Chronicles (Seasons)</h2>
+                <h2 className="text-2xl font-rune mb-4 text-white">Crônicas (Temporadas)</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {anime.seasons.filter((s: any) => s.season_number > 0).map((season: any) => (
                     <Link key={season.id} href={`/watch/${type}/${id}/${season.season_number}/1`}>
