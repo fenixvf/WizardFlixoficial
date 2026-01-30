@@ -89,6 +89,19 @@ function MainLayout() {
                       <span>Meu Grimório (Lista)</span>
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {!user && (
+                    <>
+                      <DropdownMenuSeparator className="bg-primary/10" />
+                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                        <Link href="/auth" className="w-full flex items-center">
+                          <LogIn className="mr-2 h-4 w-4" />
+                          <span>Entrar / Registrar</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
                   {user && (
                     <>
                       <DropdownMenuSeparator className="bg-primary/10" />
