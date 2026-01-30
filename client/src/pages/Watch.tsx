@@ -44,14 +44,17 @@ export default function Watch() {
       </div>
 
       {/* Player Container */}
-      <div className="flex-1 relative bg-black flex items-center justify-center">
-        <iframe
-          src={getEmbedUrl()}
-          className="w-full h-full absolute inset-0"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; encrypted-media"
-        />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-white/5">
+          <iframe
+            src={getEmbedUrl()}
+            title={details ? (details.title || details.name) : "Video Player"}
+            className="absolute top-0 left-0 w-full h-full border-0"
+            /* Atributos essenciais para funcionamento da API externa */
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
       </div>
 
       {/* Episode Navigation (TV Only) */}
