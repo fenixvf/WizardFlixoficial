@@ -263,13 +263,16 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Fandub not found" });
       }
       
-      const tmdbData = await fetchTMDB(`/tv/${tmdbId}`, {
+      const type = fandubItem.type || 'tv';
+      const tmdbData = await fetchTMDB(`/${type}/${tmdbId}`, {
         append_to_response: 'external_ids,videos,credits'
       });
       
       res.json({
         ...tmdbData,
         isFandub: true,
+        type: type,
+        seasons: fandubItem.seasons,
         embedUrl: fandubItem.embedUrl,
         studio: fandubItem.studio,
         fandubCast: fandubItem.cast
