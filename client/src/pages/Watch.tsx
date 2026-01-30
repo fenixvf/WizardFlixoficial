@@ -44,16 +44,34 @@ export default function Watch() {
       </div>
 
       {/* Player Container */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-white/5">
+      <div className="flex-1 flex flex-col items-center justify-center p-2 md:p-6 bg-black/40">
+        <div className="relative w-full max-w-[1400px] aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.15)] border border-white/10 group">
           <iframe
             src={getEmbedUrl()}
             title={details ? (details.title || details.name) : "Video Player"}
-            className="absolute top-0 left-0 w-full h-full border-0"
+            className="absolute top-0 left-0 w-full h-full border-0 z-10"
             /* Atributos essenciais para funcionamento da API externa */
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
+          {/* Overlay de carregamento sutil */}
+          <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 -z-0">
+            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          </div>
+        </div>
+        
+        <div className="mt-4 w-full max-w-[1400px] flex flex-wrap gap-4 items-center justify-between text-zinc-500 text-xs px-2">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+              Servidor Principal
+            </span>
+            <span className="hidden md:inline text-zinc-400">Dica: Use o menu de engrenagem ⚙️ no canto do player para trocar o Áudio ou Legenda</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="bg-white/5 px-2 py-1 rounded border border-white/10">Full HD 1080p</span>
+            <span className="bg-white/5 px-2 py-1 rounded border border-white/10">Auto-ajuste</span>
+          </div>
         </div>
       </div>
 
