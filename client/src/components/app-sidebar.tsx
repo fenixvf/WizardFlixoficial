@@ -14,8 +14,13 @@ const menuItems = [
 
 export function AppSidebar() {
   const [location] = useLocation();
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const isExpanded = state === "expanded";
+
+  // Função para fechar o menu ao clicar em um item (especialmente no mobile)
+  const handleItemClick = () => {
+    setOpenMobile(false);
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-background/95 backdrop-blur-xl shadow-2xl transition-all duration-500">
@@ -31,6 +36,7 @@ export function AppSidebar() {
                     asChild 
                     isActive={location === item.path}
                     tooltip={item.label}
+                    onClick={handleItemClick}
                     className={cn(
                       "transition-all duration-300 min-h-[44px] rounded-xl group",
                       location === item.path 

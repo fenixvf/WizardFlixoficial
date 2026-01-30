@@ -1,29 +1,47 @@
-import { useState, useEffect } from "react";
-import { useSearch } from "@/hooks/use-content";
+import { useState, useEffect, useMemo } from "react";
+import { useTrending, useNewReleases } from "@/hooks/use-content";
 import { AnimeCard } from "@/components/AnimeCard";
 import { Input } from "@/components/ui/input";
 import { Search as SearchIcon, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLocation } from "wouter";
 
 export default function Search() {
-  const [location] = useLocation();
-  const searchParams = new URLSearchParams(window.location.search);
-  const urlQuery = searchParams.get('q') || "";
-  const [query, setQuery] = useState(urlQuery);
-  const { data, isLoading } = useSearch(query || urlQuery);
+  const [query, setQuery] = useState("");
+  const { data: trendingData, isLoading: loadingTrending } = useTrending();
+  const { data: newReleasesData, isLoading: loadingNew } = useNewReleases();
 
-  useEffect(() => {
-    if (urlQuery && urlQuery !== query) {
-      setQuery(urlQuery);
-    }
-  }, [urlQuery]);
+  // Consolida todas as obras do catálogo disponíveis localmente nas queries iniciais
+  const localCatalog = useMemo(() => {
+    const trending = trendingData?.results || [];
+    const newReleases = newReleasesData?.results || [];
+    
+    // Remove duplicatas por ID
+    const uniqueMap = new Map();
+    [...trending, ...newReleases].forEach(item => {
+      uniqueMap.set(item.id, item);
+    });
+    
+    return Array.from(uniqueMap.values());
+  }, [trendingData, newReleasesData]);
+
+  // Filtra as obras com base na pesquisa (suporta busca parcial e apenas o que está no catálogo)
+  const filteredResults = useMemo(() => {
+    if (!query.trim()) return [];
+    
+    const searchTerm = query.toLowerCase();
+    return localCatalog.filter(item => {
+      const title = (item.title || item.name || "").toLowerCase();
+      return title.includes(searchTerm);
+    });
+  }, [query, localCatalog]);
+
+  const isLoading = loadingTrending || loadingNew;
 
   return (
     <div className="min-h-screen pt-24 pb-20 px-4 container mx-auto">
       <div className="max-w-2xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl font-rune text-white mb-2">Conjurando Feitiço de Busca</h1>
-        <p className="text-muted-foreground mb-8">Encontre o anime que você procura nos arquivos.</p>
+        <h1 className="text-4xl font-rune text-white mb-2">Conjurando Busca no Catálogo</h1>
+        <p className="text-muted-foreground mb-8">Procure entre os pergaminhos disponíveis no Wizard Flix.</p>
         
         <div className="relative group">
           <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg group-hover:bg-primary/30 transition-all duration-500" />
@@ -32,7 +50,7 @@ export default function Search() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Digite o nome do anime..."
+              placeholder="Pesquise por nome (ex: One Piece)..."
               className="border-none bg-transparent text-lg focus-visible:ring-0 placeholder:text-zinc-600 h-12"
               autoFocus
             />
@@ -46,13 +64,13 @@ export default function Search() {
         </div>
       )}
 
-      {!isLoading && data?.results && (
+      {!isLoading && filteredResults.length > 0 && (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
         >
-          {data.results.map((item) => (
+          {filteredResults.map((item) => (
             <AnimeCard
               key={item.id}
               id={item.id}
@@ -66,10 +84,10 @@ export default function Search() {
         </motion.div>
       )}
 
-      {!isLoading && query && data?.results.length === 0 && (
+      {!isLoading && query && filteredResults.length === 0 && (
         <div className="text-center py-20 text-muted-foreground">
           <Sparkles className="w-12 h-12 mx-auto mb-4 text-zinc-700" />
-          <p>Os arquivos não possuem conhecimento sobre este feitiço.</p>
+          <p>Nenhuma obra encontrada no catálogo com este nome.</p>
         </div>
       )}
     </div>

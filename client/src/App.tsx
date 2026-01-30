@@ -5,10 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BookOpen, User } from "lucide-react";
+import { BookOpen, User, LogOut } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useUser } from "@/hooks/use-auth";
+import logoPng from "@assets/Design_sem_nome_20260129_132959_0000_1769733484347.jpg";
 
 // Pages
 import Home from "@/pages/Home";
@@ -36,6 +38,7 @@ function Router() {
 }
 
 export default function App() {
+  const { user, logout } = useUser();
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "4rem",
@@ -48,11 +51,11 @@ export default function App() {
           <div className="flex h-screen w-full overflow-hidden bg-background">
             <AppSidebar />
             <div className="relative flex flex-1 flex-col overflow-hidden">
-              <header className="flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
+              <header className="flex h-16 items-center justify-between border-b-0 bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
                 <div className="flex items-center gap-4">
                   <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
                   <div className="flex items-center gap-3">
-                    <BookOpen className="h-6 w-6 text-primary drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                    <img src={logoPng} alt="Wizard Flix Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
                     <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
                       Wizard Flix
                     </span>
@@ -80,10 +83,15 @@ export default function App() {
                         <span>Meu Grimório (Lista)</span>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-primary/10" />
-                    <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer">
-                      Sair da sessão
-                    </DropdownMenuItem>
+                    {user && (
+                      <>
+                        <DropdownMenuSeparator className="bg-primary/10" />
+                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sair da sessão
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </header>
