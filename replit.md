@@ -39,8 +39,31 @@ The `shared/` directory contains code used by both frontend and backend:
 
 ### Database Schema
 Two main tables:
-- **users**: id, username, password, avatarUrl, createdAt
+- **users**: id, username, password, avatarUrl, nameColor (RGB color for animated header text), createdAt
 - **favorites**: id, userId, tmdbId, type (movie/tv), title, posterPath, addedAt
+
+### Fandub System
+The application supports fan-dubbed content (Fandub) with custom embed URLs:
+- **Data Storage**: `fandub.json` file in root directory
+- **Routes**: `/details/fandub/:id` and `/watch/fandub/:id` for fandub-specific content
+- **API Endpoints**: `GET /api/fandub` (list all), `GET /api/fandub/:id` (details with TMDB data merged)
+- **Structure**: Each fandub entry contains:
+  - `id`: TMDB ID of the anime
+  - `title`: Display title
+  - `embedUrl`: Custom player embed URL
+  - `studio`: Object with `name` and `socialLink` for the dubbing studio
+  - `cast`: Array of `{ character, voiceActor, characterImage }` for voice actors
+- **Genre Filter**: "Fandub" appears as a genre option in `/genres` page
+- **UI Features**: 
+  - Fandub badge on posters and details page
+  - Cast section with character avatars and voice actor names
+  - Studio button with auto-detected social media icon (Instagram, YouTube, Twitter/X, TikTok, Discord, Twitch, Facebook)
+
+### Social Media Detection
+Located in `client/src/lib/socialMedia.ts`:
+- Automatically detects platform from URL patterns
+- Returns appropriate icon component and brand color
+- Supports: Instagram, YouTube, Twitter/X, TikTok, Facebook, Discord, Twitch, and generic website fallback
 
 ### Authentication Flow
 Simple username/password authentication with session-based auth. No external OAuth providers. Passwords should be hashed before storage (implementation detail in routes).
