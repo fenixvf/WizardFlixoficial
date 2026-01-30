@@ -47,6 +47,19 @@ export default function Profile() {
       <Card className="max-w-md mx-auto bg-background/60 backdrop-blur-xl border-primary/20">
         <CardHeader>
           <CardTitle className="text-2xl font-rune text-primary text-center">Configurações de Mago</CardTitle>
+          {form.watch("username") && (
+            <div className="flex justify-center mt-4">
+              <span className={cn(
+                "text-lg font-bold transition-all duration-300",
+                form.watch("nameColor") === 'rgb-pulse' && "animate-rgb",
+                form.watch("nameColor") === 'rgb-fire' && "animate-rgb-fire",
+                form.watch("nameColor") === 'rgb-ice' && "animate-rgb-ice",
+                form.watch("nameColor") === 'rgb-nature' && "animate-rgb-nature"
+              )}>
+                {form.watch("username")}
+              </span>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -84,7 +97,7 @@ export default function Profile() {
                         type="button"
                         variant={field.value === "rgb-pulse" ? "default" : "outline"}
                         onClick={() => field.onChange("rgb-pulse")}
-                        className="w-full animate-rgb"
+                        className={cn("w-full animate-rgb", field.value === "rgb-pulse" && "ring-2 ring-primary")}
                       >
                         Arco-Íris
                       </Button>
@@ -92,7 +105,7 @@ export default function Profile() {
                         type="button"
                         variant={field.value === "rgb-fire" ? "default" : "outline"}
                         onClick={() => field.onChange("rgb-fire")}
-                        className="w-full animate-rgb-fire"
+                        className={cn("w-full animate-rgb-fire", field.value === "rgb-fire" && "ring-2 ring-primary")}
                       >
                         Fogo Eterno
                       </Button>
@@ -100,7 +113,7 @@ export default function Profile() {
                         type="button"
                         variant={field.value === "rgb-ice" ? "default" : "outline"}
                         onClick={() => field.onChange("rgb-ice")}
-                        className="w-full animate-rgb-ice"
+                        className={cn("w-full animate-rgb-ice", field.value === "rgb-ice" && "ring-2 ring-primary")}
                       >
                         Gelo Arcano
                       </Button>
@@ -108,7 +121,7 @@ export default function Profile() {
                         type="button"
                         variant={field.value === "rgb-nature" ? "default" : "outline"}
                         onClick={() => field.onChange("rgb-nature")}
-                        className="w-full animate-rgb-nature"
+                        className={cn("w-full animate-rgb-nature", field.value === "rgb-nature" && "ring-2 ring-primary")}
                       >
                         Vida Natural
                       </Button>
