@@ -37,7 +37,7 @@ function Router() {
   );
 }
 
-export default function App() {
+function MainLayout() {
   const { data: user } = useUser();
   const { mutate: logout } = useLogout();
   const style = {
@@ -46,66 +46,72 @@ export default function App() {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full overflow-hidden bg-background">
-            <AppSidebar />
-            <div className="relative flex flex-1 flex-col overflow-hidden">
-              <header className="flex h-16 items-center justify-between border-b-0 bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
-                  <div className="flex items-center gap-3">
-                    <img src={logoPng} alt="Wizard Flix Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
-                    <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
-                      Wizard Flix
-                    </span>
-                  </div>
+    <TooltipProvider>
+      <SidebarProvider style={style as React.CSSProperties}>
+        <div className="flex h-screen w-full overflow-hidden bg-background">
+          <AppSidebar />
+          <div className="relative flex flex-1 flex-col overflow-hidden">
+            <header className="flex h-16 items-center justify-between border-b-0 bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
+                <div className="flex items-center gap-3">
+                  <img src={logoPng} alt="Wizard Flix Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                  <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
+                    Wizard Flix
+                  </span>
                 </div>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
-                      <User className="h-5 w-5 text-primary" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
-                    <DropdownMenuLabel className="font-bold text-primary">Minha Conta Mágica</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-primary/10" />
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
-                      <Link href="/profile" className="w-full flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Perfil</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
-                      <Link href="/grimoire" className="w-full flex items-center">
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        <span>Meu Grimório (Lista)</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    {user && (
-                      <>
-                        <DropdownMenuSeparator className="bg-primary/10" />
-                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Sair da sessão
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </header>
-              <main className="flex-1 overflow-y-auto">
-                <Router />
-              </main>
-              {/* Sidebar Blur Overlay when expanded */}
-              <div className="fixed inset-0 z-10 bg-background/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0 group-has-data-[state=expanded]/sidebar-wrapper:opacity-100" />
-            </div>
+              </div>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
+                    <User className="h-5 w-5 text-primary" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
+                  <DropdownMenuLabel className="font-bold text-primary">Minha Conta Mágica</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-primary/10" />
+                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                    <Link href="/profile" className="w-full flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Perfil</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                    <Link href="/grimoire" className="w-full flex items-center">
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      <span>Meu Grimório (Lista)</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {user && (
+                    <>
+                      <DropdownMenuSeparator className="bg-primary/10" />
+                      <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sair da sessão
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </header>
+            <main className="flex-1 overflow-y-auto">
+              <Router />
+            </main>
+            {/* Sidebar Blur Overlay when expanded */}
+            <div className="fixed inset-0 z-10 bg-background/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0 group-has-data-[state=expanded]/sidebar-wrapper:opacity-100" />
           </div>
-        </SidebarProvider>
-        <Toaster />
-      </TooltipProvider>
+        </div>
+      </SidebarProvider>
+      <Toaster />
+    </TooltipProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MainLayout />
     </QueryClientProvider>
   );
 }
