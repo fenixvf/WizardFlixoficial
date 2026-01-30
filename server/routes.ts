@@ -75,17 +75,18 @@ export async function registerRoutes(
         const catalogData = await fs.readFile(catalogPath, 'utf-8');
         catalog = JSON.parse(catalogData);
       } catch (e) {
-        console.error("Erro ao ler catalog.json:", e);
+        // Silently fail and use discovery if file doesn't exist
       }
 
       const animeIds = catalog.anime?.map((a: any) => a.id) || [];
       
-      // Se tivermos IDs no catálogo, buscamos eles especificamente
       if (animeIds.length > 0) {
         const results = await Promise.all(
-          animeIds.slice(0, 20).map(id => fetchTMDB(`/tv/${id}`))
+          animeIds.slice(0, 20).map(id => 
+            fetchTMDB(`/tv/${id}`).catch(() => null)
+          )
         );
-        return res.json({ results });
+        return res.json({ results: results.filter(r => r !== null) });
       }
 
       const data = await fetchTMDB('/discover/tv', {
@@ -108,17 +109,18 @@ export async function registerRoutes(
         const catalogData = await fs.readFile(catalogPath, 'utf-8');
         catalog = JSON.parse(catalogData);
       } catch (e) {
-        console.error("Erro ao ler catalog.json:", e);
+        // Silently fail
       }
 
       const animeIds = catalog.anime?.map((a: any) => a.id) || [];
       
-      // Para novidades, se tivermos catálogo, mostramos os últimos adicionados (invertendo a ordem)
       if (animeIds.length > 0) {
         const results = await Promise.all(
-          [...animeIds].reverse().slice(0, 10).map(id => fetchTMDB(`/tv/${id}`))
+          [...animeIds].reverse().slice(0, 10).map(id => 
+            fetchTMDB(`/tv/${id}`).catch(() => null)
+          )
         );
-        return res.json({ results });
+        return res.json({ results: results.filter(r => r !== null) });
       }
 
       const data = await fetchTMDB('/discover/tv', {
