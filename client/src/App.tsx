@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useUser, useLogout } from "@/hooks/use-auth";
 import logoPng from "@assets/Design_sem_nome_20260129_132959_0000_(1)_1769734186849.png";
+import { cn } from "@/lib/utils";
 
 // Pages
 import Home from "@/pages/Home";
@@ -80,50 +81,51 @@ function MainLayout() {
                   </span>
                 )}
                 <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
-                    <User className="h-5 w-5 text-primary" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
-                  <DropdownMenuLabel className="font-bold text-primary">Minha Conta Mágica</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-primary/10" />
-                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
-                    <Link href="/profile" className="w-full flex items-center">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
-                    <Link href="/grimoire" className="w-full flex items-center">
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      <span>Meu Grimório (Lista)</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  
-                  {!user && (
-                    <>
-                      <DropdownMenuSeparator className="bg-primary/10" />
-                      <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
-                        <Link href="/auth" className="w-full flex items-center">
-                          <LogIn className="mr-2 h-4 w-4" />
-                          <span>Entrar / Registrar</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
+                      <User className="h-5 w-5 text-primary" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
+                    <DropdownMenuLabel className="font-bold text-primary">Minha Conta Mágica</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-primary/10" />
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                      <Link href="/profile" className="w-full flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Perfil</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                      <Link href="/grimoire" className="w-full flex items-center">
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        <span>Meu Grimório (Lista)</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    
+                    {!user && (
+                      <>
+                        <DropdownMenuSeparator className="bg-primary/10" />
+                        <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
+                          <Link href="/auth" className="w-full flex items-center">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            <span>Entrar / Registrar</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
 
-                  {user && (
-                    <>
-                      <DropdownMenuSeparator className="bg-primary/10" />
-                      <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sair da sessão
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {user && (
+                      <>
+                        <DropdownMenuSeparator className="bg-primary/10" />
+                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sair da sessão
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </header>
             <main className="flex-1 overflow-y-auto">
               <Router />
