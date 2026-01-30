@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useUser, useLogout } from "@/hooks/use-auth";
-import logoPng from "@assets/Design_sem_nome_20260129_132959_0000_1769733484347.jpg";
+import logoPng from "@assets/Design_sem_nome_20260129_132959_0000_(1)_1769734186849.png";
 
 // Pages
 import Home from "@/pages/Home";
