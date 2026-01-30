@@ -15,6 +15,9 @@ export default function Home() {
   const featuredList = data?.results?.slice(0, 10) || [];
   const newReleases = newReleasesData?.results || [];
 
+  // Ordenar trending pela ordem do catálogo (se disponível no backend)
+  // O backend já retorna na ordem do catalog.json
+
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });

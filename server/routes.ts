@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { insertUserSchema, insertFavoriteSchema } from "@shared/schema";
 import { z } from "zod";
+import fs from "fs/promises";
+import path from "path";
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -67,6 +69,25 @@ export async function registerRoutes(
   // Content Routes (TMDB Proxy)
   app.get(api.content.trending.path, async (req, res) => {
     try {
+      let catalog: any = { anime: [] };
+      try {
+        const catalogPath = path.resolve(process.cwd(), 'catalog.json');
+        const catalogData = await fs.readFile(catalogPath, 'utf-8');
+        catalog = JSON.parse(catalogData);
+      } catch (e) {
+        console.error("Erro ao ler catalog.json:", e);
+      }
+
+      const animeIds = catalog.anime?.map((a: any) => a.id) || [];
+      
+      // Se tivermos IDs no catálogo, buscamos eles especificamente
+      if (animeIds.length > 0) {
+        const results = await Promise.all(
+          animeIds.slice(0, 20).map(id => fetchTMDB(`/tv/${id}`))
+        );
+        return res.json({ results });
+      }
+
       const data = await fetchTMDB('/discover/tv', {
         with_genres: '16',
         with_original_language: 'ja',
@@ -81,6 +102,25 @@ export async function registerRoutes(
 
   app.get(api.content.newReleases.path, async (req, res) => {
     try {
+      let catalog: any = { anime: [] };
+      try {
+        const catalogPath = path.resolve(process.cwd(), 'catalog.json');
+        const catalogData = await fs.readFile(catalogPath, 'utf-8');
+        catalog = JSON.parse(catalogData);
+      } catch (e) {
+        console.error("Erro ao ler catalog.json:", e);
+      }
+
+      const animeIds = catalog.anime?.map((a: any) => a.id) || [];
+      
+      // Para novidades, se tivermos catálogo, mostramos os últimos adicionados (invertendo a ordem)
+      if (animeIds.length > 0) {
+        const results = await Promise.all(
+          [...animeIds].reverse().slice(0, 10).map(id => fetchTMDB(`/tv/${id}`))
+        );
+        return res.json({ results });
+      }
+
       const data = await fetchTMDB('/discover/tv', {
         with_genres: '16',
         with_original_language: 'ja',
