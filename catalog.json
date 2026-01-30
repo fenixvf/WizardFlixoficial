@@ -1,0 +1,10 @@
+{
+  "anime": [
+    { "id": 95479, "title": "Jujutsu Kaisen" },
+    { "id": 114410, "title": "Chainsaw Man" },
+    { "id": 110316, "title": "Blue Lock" }
+  ],
+  "movies": [
+    { "id": 550, "title": "Fight Club" }
+  ]
+}
