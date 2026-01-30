@@ -9,7 +9,7 @@ import { BookOpen, User, LogOut } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { useUser } from "@/hooks/use-auth";
+import { useUser, useLogout } from "@/hooks/use-auth";
 import logoPng from "@assets/Design_sem_nome_20260129_132959_0000_1769733484347.jpg";
 
 // Pages
@@ -38,7 +38,8 @@ function Router() {
 }
 
 export default function App() {
-  const { user, logout } = useUser();
+  const { data: user } = useUser();
+  const { mutate: logout } = useLogout();
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "4rem",
