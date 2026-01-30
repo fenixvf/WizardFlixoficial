@@ -93,3 +93,27 @@
 .animate-rgb {
   animation: rgb-text 3s linear infinite;
 }
+
+/* Variação RGB: Fogo */
+@keyframes rgb-fire {
+  0% { color: #ff4d00; text-shadow: 0 0 10px #ff4d00; }
+  50% { color: #ff0000; text-shadow: 0 0 15px #ff0000; }
+  100% { color: #ff4d00; text-shadow: 0 0 10px #ff4d00; }
+}
+.animate-rgb-fire { animation: rgb-fire 2s ease-in-out infinite; }
+
+/* Variação RGB: Gelo */
+@keyframes rgb-ice {
+  0% { color: #00d4ff; text-shadow: 0 0 10px #00d4ff; }
+  50% { color: #0080ff; text-shadow: 0 0 15px #0080ff; }
+  100% { color: #00d4ff; text-shadow: 0 0 10px #00d4ff; }
+}
+.animate-rgb-ice { animation: rgb-ice 2s ease-in-out infinite; }
+
+/* Variação RGB: Natureza */
+@keyframes rgb-nature {
+  0% { color: #00ff80; text-shadow: 0 0 10px #00ff80; }
+  50% { color: #00cc00; text-shadow: 0 0 15px #00cc00; }
+  100% { color: #00ff80; text-shadow: 0 0 10px #00ff80; }
+}
+.animate-rgb-nature { animation: rgb-nature 2s ease-in-out infinite; }

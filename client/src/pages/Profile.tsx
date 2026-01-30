@@ -86,7 +86,31 @@ export default function Profile() {
                         onClick={() => field.onChange("rgb-pulse")}
                         className="w-full animate-rgb"
                       >
-                        RGB Mágico
+                        Arco-Íris
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={field.value === "rgb-fire" ? "default" : "outline"}
+                        onClick={() => field.onChange("rgb-fire")}
+                        className="w-full animate-rgb-fire"
+                      >
+                        Fogo Eterno
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={field.value === "rgb-ice" ? "default" : "outline"}
+                        onClick={() => field.onChange("rgb-ice")}
+                        className="w-full animate-rgb-ice"
+                      >
+                        Gelo Arcano
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={field.value === "rgb-nature" ? "default" : "outline"}
+                        onClick={() => field.onChange("rgb-nature")}
+                        className="w-full animate-rgb-nature"
+                      >
+                        Vida Natural
                       </Button>
                     </div>
                     <FormMessage />
