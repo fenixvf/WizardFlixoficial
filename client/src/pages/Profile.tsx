@@ -83,48 +83,46 @@ export default function Profile() {
                 name="nameColor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Efeito de Nome</FormLabel>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        type="button"
-                        variant={field.value === "default" ? "default" : "outline"}
-                        onClick={() => field.onChange("default")}
-                        className="w-full"
-                      >
-                        Padrão
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={field.value === "rgb-pulse" ? "default" : "outline"}
-                        onClick={() => field.onChange("rgb-pulse")}
-                        className={cn("w-full animate-rgb", field.value === "rgb-pulse" && "ring-2 ring-primary")}
-                      >
-                        Arco-Íris
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={field.value === "rgb-fire" ? "default" : "outline"}
-                        onClick={() => field.onChange("rgb-fire")}
-                        className={cn("w-full animate-rgb-fire", field.value === "rgb-fire" && "ring-2 ring-primary")}
-                      >
-                        Fogo Eterno
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={field.value === "rgb-ice" ? "default" : "outline"}
-                        onClick={() => field.onChange("rgb-ice")}
-                        className={cn("w-full animate-rgb-ice", field.value === "rgb-ice" && "ring-2 ring-primary")}
-                      >
-                        Gelo Arcano
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={field.value === "rgb-nature" ? "default" : "outline"}
-                        onClick={() => field.onChange("rgb-nature")}
-                        className={cn("w-full animate-rgb-nature", field.value === "rgb-nature" && "ring-2 ring-primary")}
-                      >
-                        Vida Natural
-                      </Button>
+                    <FormLabel className="text-primary/80 mb-4 block">Essência do seu Nome</FormLabel>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        { id: "default", label: "Padrão", class: "", desc: "A simplicidade de um mago aprendiz." },
+                        { id: "rgb-pulse", label: "Arco-Íris", class: "animate-rgb", desc: "Todo o espectro da magia rúnica." },
+                        { id: "rgb-fire", label: "Fogo Eterno", class: "animate-rgb-fire", desc: "Chamas que nunca se apagam." },
+                        { id: "rgb-ice", label: "Gelo Arcano", class: "animate-rgb-ice", desc: "O frio absoluto do vazio." },
+                        { id: "rgb-nature", label: "Vida Natural", class: "animate-rgb-nature", desc: "A força primordial da floresta." },
+                      ].map((effect) => (
+                        <div
+                          key={effect.id}
+                          onClick={() => field.onChange(effect.id)}
+                          className={cn(
+                            "relative group cursor-pointer overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]",
+                            field.value === effect.id
+                              ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                              : "border-primary/10 bg-zinc-900/40 hover:border-primary/40"
+                          )}
+                        >
+                          <div className="flex flex-col gap-1">
+                            <span className={cn("text-lg font-bold transition-all duration-300", effect.class)}>
+                              {effect.label}
+                            </span>
+                            <span className="text-xs text-muted-foreground leading-relaxed">
+                              {effect.desc}
+                            </span>
+                          </div>
+                          {field.value === effect.id && (
+                            <div className="absolute top-2 right-2">
+                              <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(139,92,246,1)]" />
+                            </div>
+                          )}
+                          <div className={cn(
+                            "absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+                            field.value === effect.id && "opacity-100"
+                          )} />
+                          {/* Animated background glow on hover */}
+                          <div className="absolute -inset-px bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500" />
+                        </div>
+                      ))}
                     </div>
                     <FormMessage />
                   </FormItem>
