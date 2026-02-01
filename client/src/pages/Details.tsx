@@ -350,11 +350,6 @@ export default function Details() {
                             {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
                             <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
                           </Avatar>
-                          {comment.user?.isVip && (
-                            <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-0.5 border border-background">
-                              <Check className="w-2 h-2 text-white stroke-[4]" />
-                            </div>
-                          )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">

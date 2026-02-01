@@ -46,18 +46,6 @@ function Router() {
 function MainLayout() {
   const { data: user } = useUser();
   const { mutate: logout } = useLogout();
-  const [fairyParticles, setFairyParticles] = useState<{ id: number, left: string, top: string, delay: string, duration: string }[]>([]);
-
-  useEffect(() => {
-    const particles = Array.from({ length: 15 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 5}s`,
-      duration: `${5 + Math.random() * 5}s`
-    }));
-    setFairyParticles(particles);
-  }, []);
 
   const style = {
     "--sidebar-width": "16rem",
@@ -67,19 +55,7 @@ function MainLayout() {
   return (
     <TooltipProvider>
       <SidebarProvider style={style as React.CSSProperties}>
-        <div className="flex h-screen w-full overflow-hidden bg-background relative">
-          {fairyParticles.map((p) => (
-            <div 
-              key={p.id}
-              className="fairy-particle animate-fairy-float"
-              style={{ 
-                left: p.left, 
-                top: p.top, 
-                animationDelay: p.delay,
-                animationDuration: p.duration
-              }}
-            />
-          ))}
+        <div className="flex h-screen w-full overflow-hidden bg-background">
           <AppSidebar />
           <div className="relative flex flex-1 flex-col overflow-hidden">
             <header className="flex h-16 items-center justify-between border-b border-primary/10 bg-background/80 px-6 backdrop-blur-xl z-20 shadow-md transition-all duration-300">
