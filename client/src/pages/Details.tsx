@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { detectSocialMedia } from "@/lib/socialMedia";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -302,7 +302,7 @@ export default function Details() {
                   )}
 
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                    {commentsData?.length === 0 && (
+                    {allComments.length === 0 && (
                       <p className="text-center text-muted-foreground py-8">Nenhum sussurro mágico por aqui ainda...</p>
                     )}
                     {allComments.map((comment: any) => (
