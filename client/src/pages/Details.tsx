@@ -2,7 +2,7 @@ import { useRoute, Link, useLocation } from "wouter";
 import { useContentDetails, useFandubDetails } from "@/hooks/use-content";
 import { useFavorites, useAddFavorite, useRemoveFavorite } from "@/hooks/use-favorites";
 import { useUser } from "@/hooks/use-auth";
-import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink, Heart, MessageSquare, Send, ThumbsUp, Trash2, Edit2, X } from "lucide-react";
+import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink, Heart, MessageSquare, Send, ThumbsUp, Trash2, Edit2, X, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +13,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import verifiedBadge from "@assets/717fdc66e8ae8bda2345abd93c9ea4d7_1769920818759.png";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Details() {
   const [location] = useLocation();
@@ -48,6 +50,7 @@ export default function Details() {
   const [commentText, setCommentText] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editCommentText, setEditCommentText] = useState("");
+  const [commentToDelete, setCommentToDelete] = useState<number | null>(null);
 
   const { data: likesData } = useQuery<{ count: number; userLiked: boolean }>({
     queryKey: [`/api/content/${type}/${id}/likes`],
@@ -375,21 +378,37 @@ export default function Details() {
                                   >
                                     {comment.user?.username}
                                   </span>
+                                  {comment.user?.isVip && (
+                                    <img 
+                                      src={verifiedBadge} 
+                                      alt="VIP" 
+                                      className="w-4 h-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" 
+                                    />
+                                  )}
                                   <ExternalLink className="w-3 h-3 text-muted-foreground group-hover/vip:text-primary transition-colors" />
                                 </a>
                               ) : (
-                                <span className={cn(
-                                  "text-sm font-bold",
-                                  comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
-                                  comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                                  comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                                  comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                                  (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
-                                )}
-                                style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
-                                >
-                                  {comment.user?.username}
-                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className={cn(
+                                    "text-sm font-bold",
+                                    comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
+                                    comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                                    comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                                    comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                                    (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
+                                  )}
+                                  style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
+                                  >
+                                    {comment.user?.username}
+                                  </span>
+                                  {comment.user?.isVip && (
+                                    <img 
+                                      src={verifiedBadge} 
+                                      alt="VIP" 
+                                      className="w-4 h-4 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" 
+                                    />
+                                  )}
+                                </div>
                               )}
                             </div>
                             <span className="text-[10px] text-muted-foreground">
@@ -447,11 +466,7 @@ export default function Details() {
                                   Editar
                                 </button>
                                 <button 
-                                  onClick={() => {
-                                    if(confirm("Deseja apagar sua mensagem mágica?")) {
-                                      deleteComment.mutate(comment.id);
-                                    }
-                                  }}
+                                  onClick={() => setCommentToDelete(comment.id)}
                                   className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground hover:text-destructive transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -554,6 +569,29 @@ export default function Details() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={!!commentToDelete} onOpenChange={(open) => !open && setCommentToDelete(null)}>
+        <AlertDialogContent className="bg-zinc-950/90 backdrop-blur-xl border-primary/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-rune text-primary flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-destructive" />
+              Destruir Mensagem Mágica?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Este feitiço é permanente. Você tem certeza que deseja apagar este comentário do Círculo?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-zinc-900 border-white/10 text-white hover:bg-zinc-800">Manter</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => commentToDelete && deleteComment.mutate(commentToDelete)}
+              className="bg-destructive hover:bg-destructive/90 text-white"
+            >
+              Apagar para sempre
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
