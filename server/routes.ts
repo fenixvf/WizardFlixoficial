@@ -375,11 +375,12 @@ export async function registerRoutes(
 
       res.json({
         ...tmdbData,
-        id: tmdbId, // Garante o ID correto
+        id: tmdbId,
         isFandub: true,
         type: type,
         seasons: fandubItem.seasons ? organizeSeasons(fandubItem.seasons) : [],
         seasonsRaw: fandubItem.seasons || {},
+        tmdbSeasons: tmdbData.seasons || [],
         embedUrl: fandubItem.embedUrl ? formatEmbedUrl(fandubItem.embedUrl) : null,
         studio: fandubItem.studio,
         fandubCast: fandubItem.cast,

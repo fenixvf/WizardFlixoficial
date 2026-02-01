@@ -1,6 +1,6 @@
 import { useRoute, Link, useLocation } from "wouter";
 import { ArrowLeft, Play, LayoutGrid, Mic } from "lucide-react";
-import { useContentDetails, useFandubDetails } from "@/hooks/use-content";
+import { useContentDetails, useFandubDetails, useFandubEpisode } from "@/hooks/use-content";
 import { Button } from "@/components/ui/button";
 
 export default function Watch() {
@@ -17,9 +17,9 @@ export default function Watch() {
   
   if (isFandubRoute && fandubParams) {
     type = 'tv';
-    id = Number(fandubParams.id);
-    season = fandubParams.season ? Number(fandubParams.season) : 1;
-    episode = fandubParams.episode ? Number(fandubParams.episode) : 1;
+    id = Number((fandubParams as any).id);
+    season = (fandubParams as any).season ? Number((fandubParams as any).season) : 1;
+    episode = (fandubParams as any).episode ? Number((fandubParams as any).episode) : 1;
   } else if (regularParams) {
     type = (regularParams as any).type as 'movie' | 'tv';
     id = Number((regularParams as any).id);
@@ -29,13 +29,23 @@ export default function Watch() {
 
   const { data: regularDetails } = useContentDetails(type, id);
   const { data: fandubDetails } = useFandubDetails(isFandubRoute ? id : 0);
+  const { data: fandubEpisodeData } = useFandubEpisode(
+    isFandubRoute ? id : 0, 
+    isFandubRoute ? season : 0, 
+    isFandubRoute ? episode : 0
+  );
   
   const details = isFandubRoute ? fandubDetails : regularDetails;
   const isFandub = isFandubRoute || details?.isFandub;
 
   const getEmbedUrl = () => {
-    if (isFandub && details?.embedUrl) {
-      return details.embedUrl;
+    if (isFandub) {
+      if (fandubEpisodeData?.embedUrl) {
+        return fandubEpisodeData.embedUrl;
+      }
+      if (details?.embedUrl) {
+        return details.embedUrl;
+      }
     }
     
     if (type === 'movie') {
@@ -51,9 +61,12 @@ export default function Watch() {
   const videoUrl = getEmbedUrl();
   const detailsUrl = isFandub ? `/details/fandub/${id}` : `/details/${type}/${id}`;
 
+  const fandubSeasons = details?.seasons || [];
+  const currentSeasonData = fandubSeasons.find((s: any) => s.season === season);
+  const episodeCount = currentSeasonData?.episodes?.length || 24;
+
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      {/* Header */}
       <div className="h-16 flex items-center px-4 border-b border-white/10 bg-zinc-950">
         <Link href={detailsUrl}>
           <Button variant="ghost" className="text-zinc-400 hover:text-white" data-testid="button-back">
@@ -79,7 +92,6 @@ export default function Watch() {
         </div>
       </div>
 
-      {/* Player Container */}
       <div className="flex-1 flex flex-col items-center justify-center p-2 md:p-6 bg-black/40">
         <div className="relative w-full max-w-[1400px] aspect-video bg-black rounded-xl overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.15)] border border-white/10 group">
           <iframe
@@ -90,7 +102,6 @@ export default function Watch() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
-          {/* Overlay de carregamento sutil */}
           <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 -z-0">
             <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
           </div>
@@ -113,7 +124,6 @@ export default function Watch() {
         </div>
       </div>
 
-      {/* Episode Navigation (TV Only) */}
       {type === 'tv' && details && (
         <div className="bg-zinc-950 border-t border-white/10 p-4">
           <div className="container mx-auto">
@@ -127,7 +137,7 @@ export default function Watch() {
             </div>
             
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {Array.from({ length: 24 }).map((_, i) => {
+              {Array.from({ length: episodeCount }).map((_, i) => {
                 const epNum = i + 1;
                 const isCurrent = epNum === episode;
                 const watchUrl = isFandub ? `/watch/fandub/${id}/${season}/${epNum}` : `/watch/${type}/${id}/${season}/${epNum}`;

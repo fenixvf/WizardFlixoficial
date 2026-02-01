@@ -527,7 +527,7 @@ export default function Details() {
               </motion.div>
             )}
 
-            {type === 'tv' && anime.seasons && (
+            {type === 'tv' && (isFandub ? anime.seasons?.length > 0 : anime.seasons) && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -536,29 +536,59 @@ export default function Details() {
               >
                 <h2 className="text-2xl font-rune mb-4 text-white">Crônicas (Temporadas)</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {anime.seasons.filter((s: any) => s.season_number > 0).map((season: any) => (
-                    <Link key={season.id} href={isFandub ? `/watch/fandub/${id}/${season.season_number}/1` : `/watch/${type}/${id}/${season.season_number}/1`}>
-                      <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 hover:bg-white/5 transition-colors cursor-pointer group">
-                        {season.poster_path ? (
-                          <div className="aspect-[2/3] rounded-lg overflow-hidden mb-2 relative">
-                            <img 
-                              src={`https://image.tmdb.org/t/p/w300${season.poster_path}`} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Play className="w-8 h-8 text-white fill-white" />
+                  {isFandub ? (
+                    anime.seasons.map((fandubSeason: any) => {
+                      const tmdbSeason = anime.tmdbSeasons?.find((s: any) => s.season_number === fandubSeason.season);
+                      const episodeCount = fandubSeason.episodes?.length || 0;
+                      return (
+                        <Link key={fandubSeason.season} href={`/watch/fandub/${id}/${fandubSeason.season}/1`}>
+                          <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 hover:bg-white/5 transition-colors cursor-pointer group">
+                            {tmdbSeason?.poster_path ? (
+                              <div className="aspect-[2/3] rounded-lg overflow-hidden mb-2 relative">
+                                <img 
+                                  src={`https://image.tmdb.org/t/p/w300${tmdbSeason.poster_path}`} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Play className="w-8 h-8 text-white fill-white" />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="aspect-[2/3] bg-zinc-800 rounded-lg mb-2 flex items-center justify-center text-zinc-500">
+                                <Play className="w-8 h-8" />
+                              </div>
+                            )}
+                            <h3 className="font-bold text-sm truncate">Temporada {fandubSeason.season}</h3>
+                            <p className="text-xs text-muted-foreground">{episodeCount} Episódios</p>
+                          </div>
+                        </Link>
+                      );
+                    })
+                  ) : (
+                    anime.seasons.filter((s: any) => s.season_number > 0).map((season: any) => (
+                      <Link key={season.id} href={`/watch/${type}/${id}/${season.season_number}/1`}>
+                        <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 hover:bg-white/5 transition-colors cursor-pointer group">
+                          {season.poster_path ? (
+                            <div className="aspect-[2/3] rounded-lg overflow-hidden mb-2 relative">
+                              <img 
+                                src={`https://image.tmdb.org/t/p/w300${season.poster_path}`} 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Play className="w-8 h-8 text-white fill-white" />
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="aspect-[2/3] bg-zinc-800 rounded-lg mb-2 flex items-center justify-center text-zinc-500">
-                            No Image
-                          </div>
-                        )}
-                        <h3 className="font-bold text-sm truncate">{season.name}</h3>
-                        <p className="text-xs text-muted-foreground">{season.episode_count} Episódios</p>
-                      </div>
-                    </Link>
-                  ))}
+                          ) : (
+                            <div className="aspect-[2/3] bg-zinc-800 rounded-lg mb-2 flex items-center justify-center text-zinc-500">
+                              No Image
+                            </div>
+                          )}
+                          <h3 className="font-bold text-sm truncate">{season.name}</h3>
+                          <p className="text-xs text-muted-foreground">{season.episode_count} Episódios</p>
+                        </div>
+                      </Link>
+                    ))
+                  )}
                 </div>
               </motion.div>
             )}

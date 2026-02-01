@@ -79,3 +79,16 @@ export function useFandubDetails(id: number) {
     },
   });
 }
+
+// Fandub Episode URL
+export function useFandubEpisode(id: number, season: number, episode: number) {
+  return useQuery({
+    queryKey: ['/api/fandub', id, 'episode', season, episode],
+    enabled: id > 0 && season > 0 && episode > 0,
+    queryFn: async () => {
+      const res = await fetch(`/api/fandub/${id}/episode?season=${season}&episode=${episode}`);
+      if (!res.ok) throw new Error("Failed to fetch fandub episode");
+      return await res.json();
+    },
+  });
+}
