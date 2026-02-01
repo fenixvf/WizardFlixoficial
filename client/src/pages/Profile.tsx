@@ -55,6 +55,8 @@ export default function Profile() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/auth/me"], data);
+      // Invalida a query para garantir que todos os componentes (como o Header) recebam os novos dados
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({ title: "Perfil Atualizado", description: "Suas mudanças foram salvas no grimório." });
     },
   });
