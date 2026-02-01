@@ -7,6 +7,7 @@ import { z } from "zod";
 import fs from "fs/promises";
 import path from "path";
 import { formatEmbedUrl, organizeSeasons, getEpisodeUrl, getTotalEpisodes, type FandubEmbed } from "./embed-utils";
+import { storage } from "./storage";
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -37,7 +38,7 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   // Auth Routes
-  app.post(api.auth.register.path, async (req, res) => {
+  app.post("/api/auth/register", async (req, res) => {
     const result = insertUserSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ message: "Invalid input" });
@@ -52,7 +53,7 @@ export async function registerRoutes(
     res.status(201).json({ id: user.id, username: user.username });
   });
 
-  app.post(api.auth.login.path, async (req, res) => {
+  app.post("/api/auth/login", async (req, res) => {
     const result = insertUserSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ message: "Invalid input" });
@@ -79,7 +80,15 @@ export async function registerRoutes(
           await db.update(users).set({ isVip: true, socialUrl: vip.socialUrl, avatarUrl: vip.avatarUrl }).where(eq(users.id, user.id));
           user = await storage.getUser(user.id);
         }
-        return res.json({ id: user!.id, username: user!.username });
+        req.session.userId = user!.id;
+        return res.json({ 
+          id: user!.id, 
+          username: user!.username,
+          avatarUrl: user!.avatarUrl,
+          nameColor: user!.nameColor,
+          isVip: user!.isVip,
+          socialUrl: user!.socialUrl
+        });
       }
     } catch (e) {
       // Ignore if vips.json missing
@@ -90,7 +99,43 @@ export async function registerRoutes(
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.json({ id: user.id, username: user.username });
+    req.session.userId = user.id;
+    res.json({ 
+      id: user.id, 
+      username: user.username,
+      avatarUrl: user.avatarUrl,
+      nameColor: user.nameColor,
+      isVip: user.isVip,
+      socialUrl: user.socialUrl
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json(null);
+    }
+    const user = await storage.getUser(userId);
+    if (!user) {
+      return res.status(401).json(null);
+    }
+    res.json({
+      id: user.id,
+      username: user.username,
+      avatarUrl: user.avatarUrl,
+      nameColor: user.nameColor,
+      isVip: user.isVip,
+      socialUrl: user.socialUrl
+    });
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      res.json({ success: true });
+    });
   });
 
   app.get("/api/avatars", async (req, res) => {
@@ -104,7 +149,7 @@ export async function registerRoutes(
   });
 
   // Content Routes (TMDB Proxy)
-  app.get(api.content.trending.path, async (req, res) => {
+  app.get("/api/content/trending", async (req, res) => {
     try {
       let catalog: any = { anime: [] };
       try {
@@ -138,7 +183,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get(api.content.newReleases.path, async (req, res) => {
+  app.get("/api/content/new-releases", async (req, res) => {
     try {
       let catalog: any = { anime: [] };
       try {
@@ -201,20 +246,29 @@ export async function registerRoutes(
   });
 
   app.patch("/api/user/profile", async (req, res) => {
-    const { userId, username, nameColor } = req.body;
+    const userId = req.session?.userId;
     if (!userId) return res.status(401).json({ message: "Não autorizado" });
     
+    const { username, nameColor, avatarUrl } = req.body;
+    
     try {
-      const updatedUser = await storage.updateUserProfile(userId, { username, nameColor });
+      const updatedUser = await storage.updateUserProfile(userId, { username, nameColor, avatarUrl });
       if (!updatedUser) return res.status(404).json({ message: "Usuário não encontrado" });
-      res.json(updatedUser);
+      res.json({
+        id: updatedUser.id,
+        username: updatedUser.username,
+        avatarUrl: updatedUser.avatarUrl,
+        nameColor: updatedUser.nameColor,
+        isVip: updatedUser.isVip,
+        socialUrl: updatedUser.socialUrl
+      });
     } catch (err) {
       console.error(err);
       res.status(400).json({ message: "Nome de usuário já em uso ou dados inválidos" });
     }
   });
 
-  app.get(api.content.search.path, async (req, res) => {
+  app.get("/api/content/search", async (req, res) => {
     try {
       const query = req.query.query as string;
       if (!query) return res.status(400).json({ message: "Query required" });
@@ -369,18 +423,19 @@ export async function registerRoutes(
   });
 
   // Favorites Routes
-  app.get(api.favorites.list.path, async (req, res) => {
-    const userId = 1; 
+  app.get("/api/favorites", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     const favs = await storage.getFavorites(userId);
     res.json(favs);
   });
 
-  app.post(api.favorites.add.path, async (req, res) => {
-    const userId = 1; // Mock
+  app.post("/api/favorites", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     const result = insertFavoriteSchema.omit({ userId: true }).safeParse(req.body);
     if (!result.success) return res.status(400).json({ message: "Invalid data" });
 
-    // Check if exists
     const existing = await storage.getFavorites(userId);
     const found = existing.find(f => f.tmdbId === result.data.tmdbId);
     if (found) return res.json(found);
@@ -389,8 +444,9 @@ export async function registerRoutes(
     res.status(201).json(fav);
   });
 
-  app.delete(api.favorites.remove.path, async (req, res) => {
-    const userId = 1; // Mock
+  app.delete("/api/favorites/:tmdbId", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     const tmdbId = parseInt(req.params.tmdbId as string);
     await storage.removeFavorite(userId, tmdbId);
     res.status(204).send();
@@ -399,13 +455,14 @@ export async function registerRoutes(
   // Likes & Comments
   app.get("/api/content/:type/:id/likes", async (req, res) => {
     const count = await storage.getLikesCount(Number(req.params.id), req.params.type);
-    const userId = 1; // Mock
-    const userLike = await storage.getUserLike(userId, Number(req.params.id), req.params.type);
+    const userId = req.session?.userId;
+    const userLike = userId ? await storage.getUserLike(userId, Number(req.params.id), req.params.type) : null;
     res.json({ count, userLiked: !!userLike });
   });
 
   app.post("/api/content/:type/:id/like", async (req, res) => {
-    const userId = 1; // Mock
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     const data = { userId, tmdbId: Number(req.params.id), type: req.params.type };
     const existing = await storage.getUserLike(userId, data.tmdbId, data.type);
     if (existing) {
@@ -425,7 +482,8 @@ export async function registerRoutes(
   });
 
   app.post("/api/content/:type/:id/comment", async (req, res) => {
-    const userId = 1; // Mock
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     const result = insertCommentSchema.omit({ userId: true, tmdbId: true, type: true }).safeParse(req.body);
     if (!result.success) return res.status(400).json({ message: "Invalid data" });
 

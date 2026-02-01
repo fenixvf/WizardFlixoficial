@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { api } from "@shared/routes";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Star } from "lucide-react";
@@ -51,11 +50,11 @@ export default function Profile() {
 
   const updateProfile = useMutation({
     mutationFn: async (values: z.infer<typeof profileSchema>) => {
-      const res = await apiRequest("PATCH", "/api/user/profile", { userId: user?.id, ...values });
+      const res = await apiRequest("PATCH", "/api/user/profile", values);
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [api.auth.me.path] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/me"], data);
       toast({ title: "Perfil Atualizado", description: "Suas mudanças foram salvas no grimório." });
     },
   });

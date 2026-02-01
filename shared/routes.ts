@@ -58,7 +58,14 @@ export const api = {
       method: 'GET' as const,
       path: '/api/auth/me',
       responses: {
-        200: z.object({ id: z.number(), username: z.string() }).nullable(),
+        200: z.object({ 
+          id: z.number(), 
+          username: z.string(),
+          avatarUrl: z.string().nullable().optional(),
+          nameColor: z.string().nullable().optional(),
+          isVip: z.boolean().nullable().optional(),
+          socialUrl: z.string().nullable().optional(),
+        }).nullable(),
       },
     },
   },
