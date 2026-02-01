@@ -229,10 +229,12 @@ export async function registerRoutes(
       const fandub = JSON.parse(fandubData);
       
       const results = await Promise.all(
-        fandub.fandubs.map(async (item: FandubEmbed) => {
+        fandub.fandubs.map(async (item: any) => {
           try {
+            const tmdbId = item.tmdbId || item.id;
+            if (!tmdbId) return null;
             const type = item.type || 'tv';
-            const tmdbData = await fetchTMDB(`/${type}/${item.tmdbId}`);
+            const tmdbData = await fetchTMDB(`/${type}/${tmdbId}`);
             return {
               ...tmdbData,
               isFandub: true,
@@ -261,7 +263,7 @@ export async function registerRoutes(
       const fandubData = await fs.readFile(fandubPath, 'utf-8');
       const fandub = JSON.parse(fandubData);
       
-      const fandubItem = fandub.fandubs.find((f: FandubEmbed) => f.tmdbId === tmdbId);
+      const fandubItem = fandub.fandubs.find((f: any) => (f.tmdbId || f.id) === tmdbId);
       if (!fandubItem) {
         return res.status(404).json({ message: "Fandub não encontrado no catálogo" });
       }
@@ -302,7 +304,7 @@ export async function registerRoutes(
       const fandubData = await fs.readFile(fandubPath, 'utf-8');
       const fandub = JSON.parse(fandubData);
 
-      const fandubItem = fandub.fandubs.find((f: FandubEmbed) => f.tmdbId === tmdbId);
+      const fandubItem = fandub.fandubs.find((f: any) => (f.tmdbId || f.id) === tmdbId);
       if (!fandubItem || !fandubItem.seasons) {
         return res.status(404).json({ message: "Fandub não encontrado" });
       }
