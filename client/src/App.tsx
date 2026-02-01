@@ -74,25 +74,23 @@ function MainLayout() {
               </div>
               
               <div className="flex items-center gap-4">
-                {user && (
-                  <div className="flex items-center gap-2 mr-2">
-                    <span className={cn(
-                      "text-sm font-black transition-all duration-300 hidden md:block",
-                      user.nameColor === 'rgb-pulse' && "animate-rgb",
-                      user.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                      user.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                      user.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                      !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
-                    )}
-                    style={user.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(user.nameColor) ? { color: user.nameColor } : {}}
-                    >
-                      {user.username}
-                    </span>
-                  </div>
-                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center gap-3 px-2 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
+                      {user && (
+                        <span className={cn(
+                          "text-sm font-black transition-all duration-300",
+                          user.nameColor === 'rgb-pulse' && "animate-rgb",
+                          user.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                          user.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                          user.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                          !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
+                        )}
+                        style={user.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(user.nameColor) ? { color: user.nameColor } : {}}
+                        >
+                          {user.username}
+                        </span>
+                      )}
                       {/* Avatar do Usuário */}
                       <div className="h-8 w-8 rounded-xl overflow-hidden border border-primary/20">
                         {user?.avatarUrl ? (
