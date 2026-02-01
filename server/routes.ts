@@ -232,18 +232,23 @@ export async function registerRoutes(
         fandub.fandubs.map(async (item: any) => {
           try {
             const tmdbId = item.tmdbId || item.id;
-            if (!tmdbId) return null;
+            if (!tmdbId) {
+              console.warn(`Item no fandub.json sem tmdbId ou id:`, item.title);
+              return null;
+            }
             const type = item.type || 'tv';
             const tmdbData = await fetchTMDB(`/${type}/${tmdbId}`);
             return {
               ...tmdbData,
+              id: tmdbId, // Garante que o ID seja o do TMDB
               isFandub: true,
               embedUrl: item.embedUrl ? formatEmbedUrl(item.embedUrl) : null,
               studio: item.studio,
               cast: item.cast,
               totalEpisodes: item.seasons ? getTotalEpisodes(item.seasons) : 0
             };
-          } catch {
+          } catch (err) {
+            console.error(`Erro ao buscar TMDB ID ${item.tmdbId || item.id}:`, err);
             return null;
           }
         })
@@ -275,6 +280,7 @@ export async function registerRoutes(
 
       res.json({
         ...tmdbData,
+        id: tmdbId, // Garante o ID correto
         isFandub: true,
         type: type,
         seasons: fandubItem.seasons ? organizeSeasons(fandubItem.seasons) : [],

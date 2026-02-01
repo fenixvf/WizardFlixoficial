@@ -39,8 +39,21 @@ export default function Profile() {
       return res.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: [api.auth.me.path] });
       toast({ title: "Perfil Atualizado", description: "Suas mudanças foram salvas no grimório." });
+    },
+  });
+
+  const updateAvatar = useMutation({
+    mutationFn: async (avatarUrl: string) => {
+      const res = await apiRequest("POST", "/api/user/avatar", { userId: user?.id, avatarUrl });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: [api.auth.me.path] });
+      toast({ title: "Avatar Atualizado", description: "Sua nova imagem foi carregada." });
     },
   });
 
@@ -48,11 +61,11 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Simple implementation: use a placeholder or actual file upload if supported
-    // For now, let's simulate a URL or ask for one for simplicity, or we can use a base64 string
     const reader = new FileReader();
     reader.onloadend = () => {
-      form.setValue("avatarUrl", reader.result as string);
+      const base64 = reader.result as string;
+      form.setValue("avatarUrl", base64);
+      updateAvatar.mutate(base64);
     };
     reader.readAsDataURL(file);
   };

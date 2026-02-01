@@ -77,11 +77,11 @@ function MainLayout() {
                 {user && (
                   <span className={cn(
                     "text-sm font-black transition-all duration-300 hidden md:block px-3 py-1 rounded-lg bg-primary/5 border border-primary/10",
-                    (user as any).nameColor === 'rgb-pulse' && "animate-rgb",
-                    (user as any).nameColor === 'rgb-fire' && "animate-rgb-fire",
-                    (user as any).nameColor === 'rgb-ice' && "animate-rgb-ice",
-                    (user as any).nameColor === 'rgb-nature' && "animate-rgb-nature",
-                    !(user as any).nameColor || (user as any).nameColor === 'default' ? "text-primary" : ""
+                    user.nameColor === 'rgb-pulse' && "animate-rgb",
+                    user.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                    user.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                    user.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                    !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
                   )}>
                     {user.username}
                   </span>
@@ -89,8 +89,8 @@ function MainLayout() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
-                      {(user as any)?.avatarUrl ? (
-                        <img src={(user as any).avatarUrl} className="h-full w-full object-cover rounded-xl" />
+                      {user?.avatarUrl ? (
+                        <img src={user.avatarUrl} className="h-full w-full object-cover rounded-xl" />
                       ) : (
                         <User className="h-6 w-6 text-primary" />
                       )}

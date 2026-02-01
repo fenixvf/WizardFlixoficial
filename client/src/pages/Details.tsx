@@ -298,18 +298,18 @@ export default function Details() {
                     {commentsData?.map((comment: any) => (
                       <div key={comment.id} className="flex gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
                         <Avatar className="h-8 w-8 border border-white/10">
-                          {(comment.user as any)?.avatarUrl ? <AvatarImage src={(comment.user as any).avatarUrl} /> : null}
+                          {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
                           <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <span className={cn(
                               "text-sm font-bold",
-                              (comment.user as any)?.nameColor === 'rgb-pulse' && "animate-rgb",
-                              (comment.user as any)?.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                              (comment.user as any)?.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                              (comment.user as any)?.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                              (!(comment.user as any)?.nameColor || (comment.user as any)?.nameColor === 'default') && "text-primary/80"
+                              comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
+                              comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                              comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                              comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                              (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
                             )}>
                               {comment.user?.username}
                             </span>
