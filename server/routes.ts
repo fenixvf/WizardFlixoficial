@@ -480,10 +480,46 @@ export async function registerRoutes(
   });
 
   app.get("/api/content/:type/:id/comments", async (req, res) => {
+    const userId = req.session?.userId;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = parseInt(req.query.offset as string) || 0;
-    const result = await storage.getComments(Number(req.params.id), req.params.type, limit, offset);
+    const result = await storage.getComments(Number(req.params.id), req.params.type, userId, limit, offset);
     res.json(result);
+  });
+
+  app.patch("/api/comments/:id", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Não autorizado" });
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ message: "Conteúdo obrigatório" });
+    
+    const comment = await storage.updateComment(Number(req.params.id), userId, content);
+    if (!comment) return res.status(404).json({ message: "Comentário não encontrado ou sem permissão" });
+    res.json(comment);
+  });
+
+  app.delete("/api/comments/:id", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Não autorizado" });
+    
+    await storage.deleteComment(Number(req.params.id), userId);
+    res.status(204).send();
+  });
+
+  app.post("/api/comments/:id/like", async (req, res) => {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: "Não autorizado" });
+    
+    const commentId = Number(req.params.id);
+    const existing = await storage.getCommentLike(userId, commentId);
+    
+    if (existing) {
+      await storage.removeCommentLike(userId, commentId);
+      res.json({ liked: false });
+    } else {
+      await storage.addCommentLike(userId, commentId);
+      res.json({ liked: true });
+    }
   });
 
   app.post("/api/content/:type/:id/comment", async (req, res) => {

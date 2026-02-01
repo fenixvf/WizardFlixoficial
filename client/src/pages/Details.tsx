@@ -2,7 +2,7 @@ import { useRoute, Link, useLocation } from "wouter";
 import { useContentDetails, useFandubDetails } from "@/hooks/use-content";
 import { useFavorites, useAddFavorite, useRemoveFavorite } from "@/hooks/use-favorites";
 import { useUser } from "@/hooks/use-auth";
-import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink, Heart, MessageSquare, Send } from "lucide-react";
+import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink, Heart, MessageSquare, Send, ThumbsUp, Trash2, Edit2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,6 +46,8 @@ export default function Details() {
 
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editCommentText, setEditCommentText] = useState("");
 
   const { data: likesData } = useQuery<{ count: number; userLiked: boolean }>({
     queryKey: [`/api/content/${type}/${id}/likes`],
@@ -91,6 +93,39 @@ export default function Details() {
     },
     onError: () => {
       toast({ title: "Erro", description: "Você precisa estar logado para comentar.", variant: "destructive" });
+    }
+  });
+
+  const updateComment = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: number, content: string }) => {
+      const res = await apiRequest("PATCH", `/api/comments/${commentId}`, { content });
+      return res.json();
+    },
+    onSuccess: () => {
+      setEditingCommentId(null);
+      setEditCommentText("");
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${type}/${id}/comments`] });
+      toast({ title: "Sucesso", description: "Comentário atualizado!" });
+    }
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (commentId: number) => {
+      await apiRequest("DELETE", `/api/comments/${commentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${type}/${id}/comments`] });
+      toast({ title: "Sucesso", description: "Comentário apagado!" });
+    }
+  });
+
+  const toggleCommentLike = useMutation({
+    mutationFn: async (commentId: number) => {
+      const res = await apiRequest("POST", `/api/comments/${commentId}/like`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${type}/${id}/comments`] });
     }
   });
 
@@ -361,7 +396,70 @@ export default function Details() {
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-300 mt-1 leading-relaxed">{comment.content}</p>
+                          
+                          {editingCommentId === comment.id ? (
+                            <div className="mt-2 space-y-2">
+                              <Textarea
+                                className="bg-background/50 border-primary/20 focus:border-primary/50 text-sm min-h-[60px]"
+                                value={editCommentText}
+                                onChange={(e) => setEditCommentText(e.target.value)}
+                              />
+                              <div className="flex justify-end gap-2">
+                                <Button size="sm" variant="ghost" onClick={() => setEditingCommentId(null)}>
+                                  <X className="w-3 h-3 mr-1" /> Cancelar
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => updateComment.mutate({ commentId: comment.id, content: editCommentText })}
+                                  disabled={updateComment.isPending}
+                                >
+                                  <Check className="w-3 h-3 mr-1" /> Salvar
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-300 mt-1 leading-relaxed">{comment.content}</p>
+                          )}
+
+                          <div className="flex items-center gap-4 mt-2">
+                            <button 
+                              onClick={() => toggleCommentLike.mutate(comment.id)}
+                              className={cn(
+                                "flex items-center gap-1 text-[11px] font-bold transition-colors",
+                                comment.userLiked ? "text-primary" : "text-muted-foreground hover:text-white"
+                              )}
+                            >
+                              <ThumbsUp className={cn("w-3.5 h-3.5", comment.userLiked && "fill-current")} />
+                              {comment.likesCount > 0 && <span>{comment.likesCount}</span>}
+                              {comment.userLiked ? "Curtiu" : "Curtir"}
+                            </button>
+
+                            {user?.id === comment.userId && (
+                              <div className="flex items-center gap-3">
+                                <button 
+                                  onClick={() => {
+                                    setEditingCommentId(comment.id);
+                                    setEditCommentText(comment.content);
+                                  }}
+                                  className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                  Editar
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    if(confirm("Deseja apagar sua mensagem mágica?")) {
+                                      deleteComment.mutate(comment.id);
+                                    }
+                                  }}
+                                  className="flex items-center gap-1 text-[11px] font-bold text-muted-foreground hover:text-destructive transition-colors"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Apagar
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

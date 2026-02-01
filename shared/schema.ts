@@ -44,6 +44,16 @@ export const insertUserSchema = createInsertSchema(users).omit({ id: true, creat
 export const insertFavoriteSchema = createInsertSchema(favorites).omit({ id: true, addedAt: true });
 export const insertLikeSchema = createInsertSchema(likes).omit({ id: true, createdAt: true });
 export const insertCommentSchema = createInsertSchema(comments).omit({ id: true, createdAt: true });
+export const commentLikes = pgTable("comment_likes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  commentId: integer("comment_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommentLikeSchema = createInsertSchema(commentLikes).omit({ id: true, createdAt: true });
+export type CommentLike = typeof commentLikes.$inferSelect;
+export type InsertCommentLike = z.infer<typeof insertCommentLikeSchema>;
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;

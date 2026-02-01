@@ -1,4 +1,4 @@
-import { users, favorites, likes, comments, type User, type InsertUser, type Favorite, type InsertFavorite, type Like, type InsertLike, type Comment, type InsertComment } from "@shared/schema";
+import { users, favorites, likes, comments, commentLikes, type User, type InsertUser, type Favorite, type InsertFavorite, type Like, type InsertLike, type Comment, type InsertComment, type CommentLike } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
 
@@ -20,8 +20,15 @@ export interface IStorage {
   removeLike(userId: number, tmdbId: number, type: string): Promise<void>;
 
   // Comments
-  getComments(tmdbId: number, type: string, limit?: number, offset?: number): Promise<{ comments: (Comment & { user: User })[], hasMore: boolean }>;
+  getComments(tmdbId: number, type: string, userId?: number, limit?: number, offset?: number): Promise<{ comments: (Comment & { user: User, likesCount: number, userLiked: boolean })[], hasMore: boolean }>;
   addComment(data: InsertComment): Promise<Comment>;
+  updateComment(id: number, userId: number, content: string): Promise<Comment | undefined>;
+  deleteComment(id: number, userId: number): Promise<void>;
+  
+  // Comment Likes
+  getCommentLike(userId: number, commentId: number): Promise<CommentLike | undefined>;
+  addCommentLike(userId: number, commentId: number): Promise<CommentLike>;
+  removeCommentLike(userId: number, commentId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -110,7 +117,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Comments
-  async getComments(tmdbId: number, type: string, limit: number = 10, offset: number = 0): Promise<{ comments: (Comment & { user: User })[], hasMore: boolean }> {
+  async getComments(tmdbId: number, type: string, userId?: number, limit: number = 10, offset: number = 0): Promise<{ comments: (Comment & { user: User, likesCount: number, userLiked: boolean })[], hasMore: boolean }> {
     const results = await db
       .select({
         comment: comments,
@@ -124,7 +131,18 @@ export class DatabaseStorage implements IStorage {
       .offset(offset);
     
     const hasMore = results.length > limit;
-    const items = results.slice(0, limit).map(r => ({ ...r.comment, user: r.user }));
+    const commentItems = results.slice(0, limit);
+
+    const items = await Promise.all(commentItems.map(async (r) => {
+      const likesResults = await db.select().from(commentLikes).where(eq(commentLikes.commentId, r.comment.id));
+      const userLiked = userId ? likesResults.some(l => l.userId === userId) : false;
+      return { 
+        ...r.comment, 
+        user: r.user, 
+        likesCount: likesResults.length,
+        userLiked
+      };
+    }));
     
     return { comments: items, hasMore };
   }
@@ -132,6 +150,38 @@ export class DatabaseStorage implements IStorage {
   async addComment(data: InsertComment): Promise<Comment> {
     const [comment] = await db.insert(comments).values(data).returning();
     return comment;
+  }
+
+  async updateComment(id: number, userId: number, content: string): Promise<Comment | undefined> {
+    const [comment] = await db.update(comments)
+      .set({ content })
+      .where(and(eq(comments.id, id), eq(comments.userId, userId)))
+      .returning();
+    return comment;
+  }
+
+  async deleteComment(id: number, userId: number): Promise<void> {
+    await db.delete(comments).where(and(eq(comments.id, id), eq(comments.userId, userId)));
+    await db.delete(commentLikes).where(eq(commentLikes.commentId, id));
+  }
+
+  // Comment Likes
+  async getCommentLike(userId: number, commentId: number): Promise<CommentLike | undefined> {
+    const [like] = await db.select().from(commentLikes).where(
+      and(eq(commentLikes.userId, userId), eq(commentLikes.commentId, commentId))
+    );
+    return like;
+  }
+
+  async addCommentLike(userId: number, commentId: number): Promise<CommentLike> {
+    const [like] = await db.insert(commentLikes).values({ userId, commentId }).returning();
+    return like;
+  }
+
+  async removeCommentLike(userId: number, commentId: number): Promise<void> {
+    await db.delete(commentLikes).where(
+      and(eq(commentLikes.userId, userId), eq(commentLikes.commentId, commentId))
+    );
   }
 }
 
