@@ -134,8 +134,10 @@ function MainLayout() {
                 </DropdownMenu>
               </div>
             </header>
-            <main className="flex-1 overflow-y-auto">
-              <Router />
+            <main className="flex-1 overflow-y-auto w-full">
+              <div className="container mx-auto w-full px-0 sm:px-4">
+                <Router />
+              </div>
             </main>
             {/* Sidebar Blur Overlay when expanded */}
             <div className="fixed inset-0 z-10 bg-background/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0 group-has-data-[state=expanded]/sidebar-wrapper:opacity-100" />

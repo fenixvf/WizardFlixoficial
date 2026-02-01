@@ -116,7 +116,6 @@ export default function Details() {
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Backdrop */}
       <div className="absolute inset-0 h-[70vh] w-full overflow-hidden z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10" />
         <img 
@@ -128,7 +127,6 @@ export default function Details() {
 
       <div className="container mx-auto px-4 pt-[20vh] relative z-20">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Poster */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -192,14 +190,12 @@ export default function Details() {
                 </p>
               )}
 
-              {/* Studio Button for Fandub */}
               {isFandub && studio && studio.socialLink && (
                 <StudioButton studio={studio} />
               )}
             </div>
           </motion.div>
 
-          {/* Details */}
           <div className="flex-1 text-white space-y-6">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -265,7 +261,7 @@ export default function Details() {
                   {user ? (
                     <div className="flex gap-3 mb-6">
                       <Avatar className="h-10 w-10 border border-primary/20 shrink-0">
-                        {user.avatarUrl ? <AvatarImage src={user.avatarUrl} /> : null}
+                        {(user as any).avatarUrl ? <AvatarImage src={(user as any).avatarUrl} /> : null}
                         <AvatarFallback className="bg-primary/20 text-primary">{user.username.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-2">
@@ -290,7 +286,7 @@ export default function Details() {
                     <div className="text-center p-4 bg-primary/5 border border-primary/10 rounded-xl mb-6">
                       <p className="text-sm text-muted-foreground">Você precisa entrar no seu grimório para comentar.</p>
                       <Link href="/auth">
-                        <Button variant="link" size="sm" className="text-primary font-bold">Fazer login</Button>
+                        <Button variant="ghost" size="sm" className="text-primary font-bold">Fazer login</Button>
                       </Link>
                     </div>
                   )}
@@ -302,18 +298,18 @@ export default function Details() {
                     {commentsData?.map((comment: any) => (
                       <div key={comment.id} className="flex gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
                         <Avatar className="h-8 w-8 border border-white/10">
-                          {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
+                          {(comment.user as any)?.avatarUrl ? <AvatarImage src={(comment.user as any).avatarUrl} /> : null}
                           <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <span className={cn(
                               "text-sm font-bold",
-                              comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
-                              comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                              comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                              comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                              (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
+                              (comment.user as any)?.nameColor === 'rgb-pulse' && "animate-rgb",
+                              (comment.user as any)?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                              (comment.user as any)?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                              (comment.user as any)?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                              (!(comment.user as any)?.nameColor || (comment.user as any)?.nameColor === 'default') && "text-primary/80"
                             )}>
                               {comment.user?.username}
                             </span>
@@ -330,7 +326,6 @@ export default function Details() {
               )}
             </AnimatePresence>
 
-            {/* Fandub Cast Section */}
             {isFandub && fandubCast.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -365,7 +360,6 @@ export default function Details() {
               </motion.div>
             )}
 
-            {/* Temporadas (Seasons) */}
             {type === 'tv' && anime.seasons && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
