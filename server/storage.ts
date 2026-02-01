@@ -6,7 +6,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUserProfile(userId: number, data: { username?: string; nameColor?: string }): Promise<User | undefined>;
+  updateUserProfile(userId: number, data: { username?: string; nameColor?: string; avatarUrl?: string }): Promise<User | undefined>;
   updateUserAvatar(userId: number, avatarUrl: string): Promise<User>;
   
   getFavorites(userId: number): Promise<Favorite[]>;
@@ -20,7 +20,7 @@ export interface IStorage {
   removeLike(userId: number, tmdbId: number, type: string): Promise<void>;
 
   // Comments
-  getComments(tmdbId: number, type: string): Promise<(Comment & { user: User })[]>;
+  getComments(tmdbId: number, type: string, limit?: number, offset?: number): Promise<{ comments: (Comment & { user: User })[], hasMore: boolean }>;
   addComment(data: InsertComment): Promise<Comment>;
 }
 
@@ -67,7 +67,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserProfile(userId: number, data: { username?: string; nameColor?: string }): Promise<User | undefined> {
+  async updateUserProfile(userId: number, data: { username?: string; nameColor?: string; avatarUrl?: string }): Promise<User | undefined> {
     const [user] = await db.update(users)
       .set(data)
       .where(eq(users.id, userId))
@@ -110,7 +110,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Comments
-  async getComments(tmdbId: number, type: string): Promise<(Comment & { user: User })[]> {
+  async getComments(tmdbId: number, type: string, limit: number = 10, offset: number = 0): Promise<{ comments: (Comment & { user: User })[], hasMore: boolean }> {
     const results = await db
       .select({
         comment: comments,
@@ -119,9 +119,14 @@ export class DatabaseStorage implements IStorage {
       .from(comments)
       .innerJoin(users, eq(comments.userId, users.id))
       .where(and(eq(comments.tmdbId, tmdbId), eq(comments.type, type)))
-      .orderBy(desc(comments.createdAt));
+      .orderBy(desc(comments.createdAt))
+      .limit(limit + 1)
+      .offset(offset);
     
-    return results.map(r => ({ ...r.comment, user: r.user }));
+    const hasMore = results.length > limit;
+    const items = results.slice(0, limit).map(r => ({ ...r.comment, user: r.user }));
+    
+    return { comments: items, hasMore };
   }
 
   async addComment(data: InsertComment): Promise<Comment> {

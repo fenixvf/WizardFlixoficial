@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { detectSocialMedia } from "@/lib/socialMedia";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,10 +51,20 @@ export default function Details() {
     queryKey: [`/api/content/${type}/${id}/likes`],
   });
 
-  const { data: commentsData } = useQuery<any[]>({
+  const { data: commentsData, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: [`/api/content/${type}/${id}/comments`],
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await fetch(`/api/content/${type}/${id}/comments?limit=10&offset=${pageParam}`);
+      return res.json();
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.hasMore ? allPages.length * 10 : undefined;
+    },
     enabled: showComments,
   });
+
+  const allComments = commentsData?.pages.flatMap(page => page.comments) || [];
 
   const toggleLike = useMutation({
     mutationFn: async () => {
@@ -295,26 +305,58 @@ export default function Details() {
                     {commentsData?.length === 0 && (
                       <p className="text-center text-muted-foreground py-8">Nenhum sussurro mágico por aqui ainda...</p>
                     )}
-                    {commentsData?.map((comment: any) => (
+                    {allComments.map((comment: any) => (
                       <div key={comment.id} className="flex gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
-                        <Avatar className="h-8 w-8 border border-white/10">
-                          {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
-                          <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative">
+                          <Avatar className="h-10 w-10 border border-white/10">
+                            {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
+                            <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          {comment.user?.isVip && (
+                            <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-0.5 border border-background">
+                              <Check className="w-2 h-2 text-white stroke-[4]" />
+                            </div>
+                          )}
+                        </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <span className={cn(
-                              "text-sm font-bold",
-                              comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
-                              comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                              comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                              comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                              (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
-                            )}
-                            style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
-                            >
-                              {comment.user?.username}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              {comment.user?.isVip && comment.user?.socialUrl ? (
+                                <a 
+                                  href={comment.user.socialUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1.5 group/vip"
+                                >
+                                  <span className={cn(
+                                    "text-sm font-bold transition-colors group-hover/vip:text-primary",
+                                    comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
+                                    comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                                    comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                                    comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                                    (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
+                                  )}
+                                  style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
+                                  >
+                                    {comment.user?.username}
+                                  </span>
+                                  <ExternalLink className="w-3 h-3 text-muted-foreground group-hover/vip:text-primary transition-colors" />
+                                </a>
+                              ) : (
+                                <span className={cn(
+                                  "text-sm font-bold",
+                                  comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
+                                  comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                                  comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                                  comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                                  (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
+                                )}
+                                style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
+                                >
+                                  {comment.user?.username}
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[10px] text-muted-foreground">
                               {new Date(comment.createdAt).toLocaleDateString()}
                             </span>
@@ -323,6 +365,20 @@ export default function Details() {
                         </div>
                       </div>
                     ))}
+                    {hasNextPage && (
+                      <div className="flex justify-center pt-4">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => fetchNextPage()} 
+                          disabled={isFetchingNextPage}
+                          className="text-primary hover:bg-primary/10"
+                        >
+                          {isFetchingNextPage ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                          Carregar mais pergaminhos...
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               )}

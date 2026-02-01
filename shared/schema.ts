@@ -7,7 +7,9 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   avatarUrl: text("avatar_url"),
-  nameColor: text("name_color").default("default"), // 'default', 'rgb-pulse', 'gold-glow', etc.
+  nameColor: text("name_color").default("default"),
+  isVip: boolean("is_vip").default(false),
+  socialUrl: text("social_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

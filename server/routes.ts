@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { api } from "@shared/routes";
-import { insertUserSchema, insertFavoriteSchema, insertLikeSchema, insertCommentSchema } from "@shared/schema";
+import { users, favorites, likes, comments, insertUserSchema, insertFavoriteSchema, insertLikeSchema, insertCommentSchema } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 import { z } from "zod";
 import fs from "fs/promises";
 import path from "path";
@@ -53,10 +53,36 @@ export async function registerRoutes(
   });
 
   app.post(api.auth.login.path, async (req, res) => {
-     // Simple login for demo - in prod use sessions/passport
     const result = insertUserSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ message: "Invalid input" });
+    }
+
+    // Check VIP list
+    try {
+      const vipsPath = path.resolve(process.cwd(), 'vips.json');
+      const vipsData = await fs.readFile(vipsPath, 'utf-8');
+      const vips = JSON.parse(vipsData);
+      const vip = vips.find((v: any) => v.username === result.data.username && v.password === result.data.password);
+      
+      if (vip) {
+        let user = await storage.getUserByUsername(vip.username);
+        if (!user) {
+          user = await storage.createUser({
+            username: vip.username,
+            password: vip.password,
+            avatarUrl: vip.avatarUrl,
+            isVip: true,
+            socialUrl: vip.socialUrl
+          } as any);
+        } else if (!user.isVip) {
+          await db.update(users).set({ isVip: true, socialUrl: vip.socialUrl, avatarUrl: vip.avatarUrl }).where(eq(users.id, user.id));
+          user = await storage.getUser(user.id);
+        }
+        return res.json({ id: user!.id, username: user!.username });
+      }
+    } catch (e) {
+      // Ignore if vips.json missing
     }
 
     const user = await storage.getUserByUsername(result.data.username);
@@ -65,6 +91,16 @@ export async function registerRoutes(
     }
 
     res.json({ id: user.id, username: user.username });
+  });
+
+  app.get("/api/avatars", async (req, res) => {
+    try {
+      const avatarsPath = path.resolve(process.cwd(), 'avatars.json');
+      const avatarsData = await fs.readFile(avatarsPath, 'utf-8');
+      res.json(JSON.parse(avatarsData));
+    } catch (e) {
+      res.json([]);
+    }
   });
 
   // Content Routes (TMDB Proxy)
@@ -382,8 +418,10 @@ export async function registerRoutes(
   });
 
   app.get("/api/content/:type/:id/comments", async (req, res) => {
-    const comments = await storage.getComments(Number(req.params.id), req.params.type);
-    res.json(comments);
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = parseInt(req.query.offset as string) || 0;
+    const result = await storage.getComments(Number(req.params.id), req.params.type, limit, offset);
+    res.json(result);
   });
 
   app.post("/api/content/:type/:id/comment", async (req, res) => {

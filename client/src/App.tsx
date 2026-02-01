@@ -74,28 +74,32 @@ function MainLayout() {
               </div>
               
               <div className="flex items-center gap-4">
-                {user && (
-                  <span className={cn(
-                    "text-sm font-black transition-all duration-300 hidden md:block px-3 py-1 rounded-lg bg-primary/5 border border-primary/10",
-                    user.nameColor === 'rgb-pulse' && "animate-rgb",
-                    user.nameColor === 'rgb-fire' && "animate-rgb-fire",
-                    user.nameColor === 'rgb-ice' && "animate-rgb-ice",
-                    user.nameColor === 'rgb-nature' && "animate-rgb-nature",
-                    !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
-                  )}
-                  style={user.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(user.nameColor) ? { color: user.nameColor } : {}}
-                  >
-                    {user.username}
-                  </span>
-                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
-                      {user?.avatarUrl ? (
-                        <img src={user.avatarUrl} className="h-full w-full object-cover rounded-xl" />
-                      ) : (
-                        <User className="h-6 w-6 text-primary" />
+                    <Button variant="ghost" className="h-10 flex items-center gap-3 px-2 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
+                      {user && (
+                        <span className={cn(
+                          "text-sm font-black transition-all duration-300 hidden md:block",
+                          user.nameColor === 'rgb-pulse' && "animate-rgb",
+                          user.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                          user.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                          user.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                          !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
+                        )}
+                        style={user.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(user.nameColor) ? { color: user.nameColor } : {}}
+                        >
+                          {user.username}
+                        </span>
                       )}
+                      <div className="h-8 w-8 rounded-xl overflow-hidden border border-primary/20">
+                        {user?.avatarUrl ? (
+                          <img src={user.avatarUrl} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center bg-primary/10">
+                            <User className="h-5 w-5 text-primary" />
+                          </div>
+                        )}
+                      </div>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">
