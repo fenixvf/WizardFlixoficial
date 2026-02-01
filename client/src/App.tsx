@@ -56,40 +56,44 @@ function MainLayout() {
         <div className="flex h-screen w-full overflow-hidden bg-background">
           <AppSidebar />
           <div className="relative flex flex-1 flex-col overflow-hidden">
-            <header className="flex h-16 items-center justify-between border-b-0 bg-background/80 px-4 backdrop-blur-xl z-20 shadow-sm transition-all duration-300">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors" />
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 flex items-center justify-center overflow-hidden rounded-lg bg-primary/10 shadow-inner">
+            <header className="flex h-16 items-center justify-between border-b border-primary/10 bg-background/80 px-6 backdrop-blur-xl z-20 shadow-md transition-all duration-300">
+              <div className="flex items-center gap-6">
+                <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:bg-primary/10 transition-colors p-2 rounded-xl" />
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 flex items-center justify-center overflow-hidden rounded-xl bg-primary/10 shadow-lg border border-primary/20">
                     <img 
                       src={logoPng} 
                       alt="Wizard Flix Logo" 
-                      className="h-full w-full object-cover scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" 
+                      className="h-full w-full object-cover scale-110 drop-shadow-[0_0_12px_rgba(139,92,246,0.6)]" 
                     />
                   </div>
-                  <span className="text-xl font-extrabold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tight">
+                  <span className="text-2xl font-black bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent tracking-tighter hidden sm:block">
                     Wizard Flix
                   </span>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {user && (
                   <span className={cn(
-                    "text-sm font-bold transition-all duration-300",
+                    "text-sm font-black transition-all duration-300 hidden md:block px-3 py-1 rounded-lg bg-primary/5 border border-primary/10",
                     (user as any).nameColor === 'rgb-pulse' && "animate-rgb",
                     (user as any).nameColor === 'rgb-fire' && "animate-rgb-fire",
                     (user as any).nameColor === 'rgb-ice' && "animate-rgb-ice",
                     (user as any).nameColor === 'rgb-nature' && "animate-rgb-nature",
                     !(user as any).nameColor || (user as any).nameColor === 'default' ? "text-primary" : ""
                   )}>
-                    {user.username.length > 12 ? `${user.username.substring(0, 12)}...` : user.username}
+                    {user.username}
                   </span>
                 )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-300">
-                      <User className="h-5 w-5 text-primary" />
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-300">
+                      {(user as any)?.avatarUrl ? (
+                        <img src={(user as any).avatarUrl} className="h-full w-full object-cover rounded-xl" />
+                      ) : (
+                        <User className="h-6 w-6 text-primary" />
+                      )}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 mt-2 border-primary/20 bg-background/95 backdrop-blur-lg">

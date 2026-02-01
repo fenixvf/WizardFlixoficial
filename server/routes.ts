@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { insertUserSchema, insertFavoriteSchema } from "@shared/schema";
+import { insertUserSchema, insertFavoriteSchema, insertLikeSchema, insertCommentSchema } from "@shared/schema";
 import { z } from "zod";
 import fs from "fs/promises";
 import path from "path";
@@ -326,8 +326,6 @@ export async function registerRoutes(
 
   // Favorites Routes
   app.get(api.favorites.list.path, async (req, res) => {
-    // Mock user ID 1 for MVP (since no session/cookie auth implemented fully yet)
-    // In real app, get userId from session
     const userId = 1; 
     const favs = await storage.getFavorites(userId);
     res.json(favs);
@@ -352,6 +350,46 @@ export async function registerRoutes(
     const tmdbId = parseInt(req.params.tmdbId as string);
     await storage.removeFavorite(userId, tmdbId);
     res.status(204).send();
+  });
+
+  // Likes & Comments
+  app.get("/api/content/:type/:id/likes", async (req, res) => {
+    const count = await storage.getLikesCount(Number(req.params.id), req.params.type);
+    const userId = 1; // Mock
+    const userLike = await storage.getUserLike(userId, Number(req.params.id), req.params.type);
+    res.json({ count, userLiked: !!userLike });
+  });
+
+  app.post("/api/content/:type/:id/like", async (req, res) => {
+    const userId = 1; // Mock
+    const data = { userId, tmdbId: Number(req.params.id), type: req.params.type };
+    const existing = await storage.getUserLike(userId, data.tmdbId, data.type);
+    if (existing) {
+      await storage.removeLike(userId, data.tmdbId, data.type);
+      res.json({ liked: false });
+    } else {
+      await storage.addLike(data);
+      res.json({ liked: true });
+    }
+  });
+
+  app.get("/api/content/:type/:id/comments", async (req, res) => {
+    const comments = await storage.getComments(Number(req.params.id), req.params.type);
+    res.json(comments);
+  });
+
+  app.post("/api/content/:type/:id/comment", async (req, res) => {
+    const userId = 1; // Mock
+    const result = insertCommentSchema.omit({ userId: true, tmdbId: true, type: true }).safeParse(req.body);
+    if (!result.success) return res.status(400).json({ message: "Invalid data" });
+
+    const comment = await storage.addComment({
+      ...result.data,
+      userId,
+      tmdbId: Number(req.params.id),
+      type: req.params.type
+    });
+    res.status(201).json(comment);
   });
 
   return httpServer;

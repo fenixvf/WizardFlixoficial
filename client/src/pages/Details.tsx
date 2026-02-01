@@ -2,12 +2,17 @@ import { useRoute, Link, useLocation } from "wouter";
 import { useContentDetails, useFandubDetails } from "@/hooks/use-content";
 import { useFavorites, useAddFavorite, useRemoveFavorite } from "@/hooks/use-favorites";
 import { useUser } from "@/hooks/use-auth";
-import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink } from "lucide-react";
+import { Loader2, Star, Calendar, Clock, BookOpen, Play, Check, Plus, Mic, ExternalLink, Heart, MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { detectSocialMedia } from "@/lib/socialMedia";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export default function Details() {
   const [location] = useLocation();
@@ -38,6 +43,46 @@ export default function Details() {
   const { mutate: addFavorite, isPending: isAdding } = useAddFavorite();
   const { mutate: removeFavorite, isPending: isRemoving } = useRemoveFavorite();
   const { toast } = useToast();
+
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+
+  const { data: likesData } = useQuery<{ count: number; userLiked: boolean }>({
+    queryKey: [`/api/content/${type}/${id}/likes`],
+  });
+
+  const { data: commentsData } = useQuery<any[]>({
+    queryKey: [`/api/content/${type}/${id}/comments`],
+    enabled: showComments,
+  });
+
+  const toggleLike = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/content/${type}/${id}/like`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${type}/${id}/likes`] });
+    },
+    onError: () => {
+      toast({ title: "Erro", description: "Você precisa estar logado para curtir.", variant: "destructive" });
+    }
+  });
+
+  const submitComment = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await apiRequest("POST", `/api/content/${type}/${id}/comment`, { content });
+      return res.json();
+    },
+    onSuccess: () => {
+      setCommentText("");
+      queryClient.invalidateQueries({ queryKey: [`/api/content/${type}/${id}/comments`] });
+      toast({ title: "Sucesso", description: "Comentário enviado com sucesso!" });
+    },
+    onError: () => {
+      toast({ title: "Erro", description: "Você precisa estar logado para comentar.", variant: "destructive" });
+    }
+  });
 
   const isFavorite = favorites?.some(f => f.tmdbId === id);
 
@@ -111,23 +156,41 @@ export default function Details() {
                 </Button>
               </Link>
               
-              <Button 
-                variant={isFavorite ? "secondary" : "outline"}
-                className={`w-full h-12 rounded-xl border-2 ${isFavorite ? 'bg-green-500/20 text-green-400 border-green-500/50 hover:bg-green-500/30' : 'border-white/20 hover:bg-white/5 text-white'}`}
-                onClick={handleToggleFavorite}
-                disabled={isAdding || isRemoving}
-                data-testid="button-favorite"
-              >
-                {isFavorite ? (
-                  <>
-                    <Check className="w-5 h-5 mr-2" /> No Grimório
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-5 h-5 mr-2" /> Adicionar ao Grimório
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant={isFavorite ? "secondary" : "outline"}
+                  className={cn("flex-1 h-12 rounded-xl border-2 transition-all duration-300", isFavorite ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'border-white/20 hover:bg-white/5 text-white')}
+                  onClick={handleToggleFavorite}
+                  disabled={isAdding || isRemoving}
+                  data-testid="button-favorite"
+                >
+                  {isFavorite ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                  <span className="ml-2 hidden sm:inline">{isFavorite ? "No Grimório" : "Grimório"}</span>
+                </Button>
+
+                <Button
+                  variant={likesData?.userLiked ? "default" : "outline"}
+                  className={cn("h-12 w-12 rounded-xl border-2 transition-all duration-300", likesData?.userLiked ? "bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/20" : "border-white/20 hover:bg-white/5")}
+                  onClick={() => toggleLike.mutate()}
+                  disabled={toggleLike.isPending}
+                >
+                  <Heart className={cn("w-5 h-5", likesData?.userLiked && "fill-current")} />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className={cn("h-12 w-12 rounded-xl border-2 border-white/20 hover:bg-white/5 transition-all duration-300", showComments && "bg-primary/20 border-primary/50")}
+                  onClick={() => setShowComments(!showComments)}
+                >
+                  <MessageSquare className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {likesData && (
+                <p className="text-center text-sm text-muted-foreground font-medium">
+                  {likesData.count} curtir{likesData.count !== 1 ? 's' : ''}
+                </p>
+              )}
 
               {/* Studio Button for Fandub */}
               {isFandub && studio && studio.socialLink && (
@@ -185,6 +248,87 @@ export default function Details() {
               <h2 className="text-xl font-bold font-rune mb-2 text-purple-300">Sinopse</h2>
               <p className="text-lg leading-relaxed text-gray-300/90">{anime.overview}</p>
             </motion.div>
+
+            <AnimatePresence>
+              {showComments && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-zinc-900/40 border border-white/10 rounded-2xl p-6 overflow-hidden"
+                >
+                  <h3 className="text-xl font-rune text-primary mb-4 flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" />
+                    Círculo de Comentários
+                  </h3>
+                  
+                  {user ? (
+                    <div className="flex gap-3 mb-6">
+                      <Avatar className="h-10 w-10 border border-primary/20 shrink-0">
+                        {user.avatarUrl ? <AvatarImage src={user.avatarUrl} /> : null}
+                        <AvatarFallback className="bg-primary/20 text-primary">{user.username.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-2">
+                        <Textarea
+                          placeholder="Escreva sua mensagem mágica..."
+                          className="bg-background/50 border-primary/20 focus:border-primary/50 resize-none min-h-[80px]"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                        />
+                        <div className="flex justify-end">
+                          <Button 
+                            size="sm" 
+                            disabled={!commentText.trim() || submitComment.isPending}
+                            onClick={() => submitComment.mutate(commentText)}
+                          >
+                            <Send className="w-4 h-4 mr-2" /> Comentar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-4 bg-primary/5 border border-primary/10 rounded-xl mb-6">
+                      <p className="text-sm text-muted-foreground">Você precisa entrar no seu grimório para comentar.</p>
+                      <Link href="/auth">
+                        <Button variant="link" size="sm" className="text-primary font-bold">Fazer login</Button>
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {commentsData?.length === 0 && (
+                      <p className="text-center text-muted-foreground py-8">Nenhum sussurro mágico por aqui ainda...</p>
+                    )}
+                    {commentsData?.map((comment: any) => (
+                      <div key={comment.id} className="flex gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
+                        <Avatar className="h-8 w-8 border border-white/10">
+                          {comment.user?.avatarUrl ? <AvatarImage src={comment.user.avatarUrl} /> : null}
+                          <AvatarFallback className="bg-primary/10 text-xs">{comment.user?.username?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className={cn(
+                              "text-sm font-bold",
+                              comment.user?.nameColor === 'rgb-pulse' && "animate-rgb",
+                              comment.user?.nameColor === 'rgb-fire' && "animate-rgb-fire",
+                              comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
+                              comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
+                              (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
+                            )}>
+                              {comment.user?.username}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(comment.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300 mt-1 leading-relaxed">{comment.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Fandub Cast Section */}
             {isFandub && fandubCast.length > 0 && (

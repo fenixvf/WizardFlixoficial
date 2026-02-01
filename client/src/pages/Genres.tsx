@@ -4,6 +4,7 @@ import { Loader2, Sparkles, Sword, Ghost, Wand2, Heart, Search, Flame, Mic } fro
 import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useFandubList } from "@/hooks/use-content";
+import { cn } from "@/lib/utils";
 
 const GENRES = [
   { id: 16, name: "Animação", icon: Sparkles },
@@ -37,20 +38,23 @@ export default function Genres() {
   return (
     <div className="min-h-screen pt-24 pb-20 container mx-auto px-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <h1 className="text-4xl font-rune text-white">Gêneros Mágicos</h1>
+        <h1 className="text-4xl font-rune text-white">Biblioteca de gêneros</h1>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
           {GENRES.map((g) => (
             <Button
               key={g.id}
               variant={selectedId === g.id ? "default" : "outline"}
-              size="sm"
+              size="default"
               onClick={() => handleGenreClick(g.id)}
-              className="rounded-full"
+              className={cn(
+                "rounded-xl transition-all duration-300 border-primary/20 hover:border-primary/50 hover:bg-primary/5 shadow-sm hover:shadow-primary/20 hover-elevate",
+                selectedId === g.id && "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+              )}
               data-testid={`button-genre-${g.id}`}
             >
-              <g.icon className="w-4 h-4 mr-2" />
-              {g.name}
+              <g.icon className="w-5 h-5 mr-2" />
+              <span className="font-semibold">{g.name}</span>
             </Button>
           ))}
           {selectedId && (

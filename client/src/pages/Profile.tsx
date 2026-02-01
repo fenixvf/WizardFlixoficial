@@ -11,10 +11,13 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@shared/routes";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Upload, Loader2 } from "lucide-react";
 
 const profileSchema = z.object({
   username: z.string().min(3).max(20),
   nameColor: z.string(),
+  avatarUrl: z.string().optional(),
 });
 
 export default function Profile() {
@@ -26,12 +29,13 @@ export default function Profile() {
     defaultValues: {
       username: user?.username || "",
       nameColor: (user as any)?.nameColor || "default",
+      avatarUrl: (user as any)?.avatarUrl || "",
     },
   });
 
   const updateProfile = useMutation({
     mutationFn: async (values: z.infer<typeof profileSchema>) => {
-      const res = await apiRequest("PATCH", "/api/user/profile", values);
+      const res = await apiRequest("PATCH", "/api/user/profile", { userId: user?.id, ...values });
       return res.json();
     },
     onSuccess: () => {
@@ -40,38 +44,66 @@ export default function Profile() {
     },
   });
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Simple implementation: use a placeholder or actual file upload if supported
+    // For now, let's simulate a URL or ask for one for simplicity, or we can use a base64 string
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      form.setValue("avatarUrl", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   if (!user) return null;
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-20">
-      <Card className="max-w-md mx-auto bg-background/60 backdrop-blur-xl border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-2xl font-rune text-primary text-center">Configurações de Mago</CardTitle>
-          {form.watch("username") && (
-            <div className="flex justify-center mt-4">
+      <Card className="max-w-md mx-auto bg-background/60 backdrop-blur-xl border-primary/20 shadow-2xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-rune text-primary mb-6">Configurações de Mago</CardTitle>
+          
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative group">
+              <Avatar className="h-24 w-24 border-4 border-primary/20 shadow-xl transition-transform duration-500 group-hover:scale-105">
+                <AvatarImage src={form.watch("avatarUrl")} />
+                <AvatarFallback className="bg-primary/10 text-primary text-3xl font-rune">
+                  {form.watch("username")?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full">
+                <Upload className="h-8 w-8 text-white" />
+                <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} />
+              </label>
+            </div>
+            
+            {form.watch("username") && (
               <span className={cn(
-                "text-lg font-bold transition-all duration-300",
+                "text-xl font-black transition-all duration-300 px-4 py-1 rounded-xl bg-primary/5 border border-primary/10 shadow-sm",
                 form.watch("nameColor") === 'rgb-pulse' && "animate-rgb",
                 form.watch("nameColor") === 'rgb-fire' && "animate-rgb-fire",
                 form.watch("nameColor") === 'rgb-ice' && "animate-rgb-ice",
-                form.watch("nameColor") === 'rgb-nature' && "animate-rgb-nature"
+                form.watch("nameColor") === 'rgb-nature' && "animate-rgb-nature",
+                (!form.watch("nameColor") || form.watch("nameColor") === 'default') && "text-primary"
               )}>
                 {form.watch("username")}
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((v) => updateProfile.mutate(v))} className="space-y-6">
+            <form onSubmit={form.handleSubmit((v) => updateProfile.mutate(v))} className="space-y-8">
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome do Mago</FormLabel>
+                    <FormLabel className="text-primary font-bold">Nome do Mago</FormLabel>
                     <FormControl>
-                      <Input {...field} maxLength={20} className="bg-zinc-900/50" />
+                      <Input {...field} maxLength={20} className="bg-zinc-900/50 border-primary/20 focus:border-primary/50 h-12 rounded-xl" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,8 +161,8 @@ export default function Profile() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={updateProfile.isPending}>
-                Salvar Alterações
+              <Button type="submit" className="w-full h-12 rounded-xl text-lg font-bold shadow-lg shadow-primary/20" disabled={updateProfile.isPending}>
+                {updateProfile.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Salvar Alterações"}
               </Button>
             </form>
           </Form>
