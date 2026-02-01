@@ -20,6 +20,7 @@ export const favorites = pgTable("favorites", {
   type: text("type").notNull(), // 'movie' or 'tv'
   title: text("title").notNull(),
   posterPath: text("poster_path"),
+  isFandub: boolean("is_fandub").default(false),
   addedAt: timestamp("added_at").defaultNow(),
 });
 

@@ -56,6 +56,7 @@ export default function Grimoire() {
               title={fav.title}
               posterPath={fav.posterPath}
               type={fav.type as 'movie' | 'tv'}
+              isFandub={fav.isFandub ?? false}
             />
           ))}
         </motion.div>

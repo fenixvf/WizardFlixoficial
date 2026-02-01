@@ -148,6 +148,7 @@ export default function Details() {
         type,
         title: anime.title || anime.name,
         posterPath: anime.poster_path,
+        isFandub: isFandub,
       });
     }
   };
