@@ -70,29 +70,42 @@ export function Navbar() {
         </nav>
 
         {/* User Menu */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="rounded-full w-10 h-10 p-0 border border-primary/20 hover:bg-primary/10 hover:border-primary/50 overflow-hidden">
-                  {(user as any).avatarUrl ? (
-                    <img src={(user as any).avatarUrl} alt={user.username} className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-5 h-5 text-purple-300" />
-                  )}
+                <Button variant="ghost" className="flex items-center gap-2 h-10 px-2 border border-primary/20 hover:bg-primary/10 hover:border-primary/50 rounded-full" data-testid="button-user-menu">
+                  <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-primary/20 flex items-center justify-center">
+                        <User className="w-4 h-4 text-purple-300" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-purple-200 hidden sm:inline max-w-[100px] truncate">
+                    {user.username}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-zinc-950 border-primary/20 text-purple-100">
                 <div className="px-2 py-1.5 text-sm font-semibold text-purple-400 border-b border-white/10 mb-1">
                   {user.username}
                 </div>
+                <Link href="/profile">
+                  <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-profile">
+                    <User className="w-4 h-4 mr-2" />
+                    Meu Perfil
+                  </DropdownMenuItem>
+                </Link>
                 <Link href="/grimoire">
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-favorites">
                     <ScrollText className="w-4 h-4 mr-2" />
                     Minha Lista
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem onClick={() => logout()} className="text-red-400 focus:text-red-300 focus:bg-red-950/30 cursor-pointer">
+                <DropdownMenuItem onClick={() => logout()} className="text-red-400 focus:text-red-300 focus:bg-red-950/30 cursor-pointer" data-testid="menu-item-logout">
                   <LogOut className="w-4 h-4 mr-2" />
                   Sair
                 </DropdownMenuItem>
