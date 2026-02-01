@@ -310,7 +310,9 @@ export default function Details() {
                               comment.user?.nameColor === 'rgb-ice' && "animate-rgb-ice",
                               comment.user?.nameColor === 'rgb-nature' && "animate-rgb-nature",
                               (!comment.user?.nameColor || comment.user?.nameColor === 'default') && "text-primary/80"
-                            )}>
+                            )}
+                            style={comment.user?.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(comment.user.nameColor) ? { color: comment.user.nameColor } : {}}
+                            >
                               {comment.user?.username}
                             </span>
                             <span className="text-[10px] text-muted-foreground">

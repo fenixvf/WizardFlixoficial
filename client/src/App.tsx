@@ -82,7 +82,9 @@ function MainLayout() {
                     user.nameColor === 'rgb-ice' && "animate-rgb-ice",
                     user.nameColor === 'rgb-nature' && "animate-rgb-nature",
                     !user.nameColor || user.nameColor === 'default' ? "text-primary" : ""
-                  )}>
+                  )}
+                  style={user.nameColor && !['default', 'rgb-pulse', 'rgb-fire', 'rgb-ice', 'rgb-nature'].includes(user.nameColor) ? { color: user.nameColor } : {}}
+                  >
                     {user.username}
                   </span>
                 )}
