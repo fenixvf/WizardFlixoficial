@@ -91,9 +91,10 @@ function MainLayout() {
                           {user.username}
                         </span>
                       )}
+                      {/* Avatar do Usuário */}
                       <div className="h-8 w-8 rounded-xl overflow-hidden border border-primary/20">
                         {user?.avatarUrl ? (
-                          <img src={user.avatarUrl} className="h-full w-full object-cover" />
+                          <img src={user.avatarUrl} className="h-full w-full object-cover" alt="Avatar" />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center bg-primary/10">
                             <User className="h-5 w-5 text-primary" />
@@ -117,13 +118,13 @@ function MainLayout() {
                         <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10">
                           <Link href="/grimoire" className="w-full flex items-center">
                             <BookOpen className="mr-2 h-4 w-4" />
-                            <span>Meu Grimório (Lista)</span>
+                            <span>Meu Grimório</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-primary/10" />
                         <DropdownMenuItem className="text-destructive focus:bg-destructive/10 cursor-pointer" onClick={() => logout()}>
                           <LogOut className="mr-2 h-4 w-4" />
-                          Sair da sessão
+                          Encerrar Sessão
                         </DropdownMenuItem>
                       </>
                     ) : (

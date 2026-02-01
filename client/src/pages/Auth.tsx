@@ -46,14 +46,14 @@ export default function Auth() {
             <Wand2 className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-3xl font-rune text-white mb-2">Wizard Flix</h1>
-          <p className="text-muted-foreground text-sm">Enter the portal to endless adventures.</p>
+          <p className="text-muted-foreground text-sm">Entre no portal para aventuras infinitas.</p>
         </div>
 
         <div className="p-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8 bg-zinc-900/50">
-              <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-white">Login</TabsTrigger>
-              <TabsTrigger value="register" className="data-[state=active]:bg-primary data-[state=active]:text-white">Register</TabsTrigger>
+              <TabsTrigger value="login" className="data-[state=active]:bg-primary data-[state=active]:text-white">Entrar</TabsTrigger>
+              <TabsTrigger value="register" className="data-[state=active]:bg-primary data-[state=active]:text-white">Registrar</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -64,9 +64,9 @@ export default function Auth() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Nome de Usuário</FormLabel>
                         <FormControl>
-                          <Input placeholder="Archmage" {...field} className="bg-zinc-900/50 border-white/10" />
+                          <Input placeholder="Arquimago" {...field} className="bg-zinc-900/50 border-white/10" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -77,7 +77,7 @@ export default function Auth() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Senha</FormLabel>
                         <FormControl>
                           <Input type="password" placeholder="••••••••" {...field} className="bg-zinc-900/50 border-white/10" />
                         </FormControl>
@@ -87,7 +87,7 @@ export default function Auth() {
                   />
                   <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoginPending}>
                     {isLoginPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Enter Grimoire
+                    Acessar Grimório
                   </Button>
                 </form>
               </Form>
@@ -101,9 +101,9 @@ export default function Auth() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Choose Name</FormLabel>
+                        <FormLabel>Escolha um Nome</FormLabel>
                         <FormControl>
-                          <Input placeholder="Novice Wizard" {...field} className="bg-zinc-900/50 border-white/10" />
+                          <Input placeholder="Mago Iniciante" {...field} className="bg-zinc-900/50 border-white/10" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -114,7 +114,7 @@ export default function Auth() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Secret Code</FormLabel>
+                        <FormLabel>Código Secreto (Senha)</FormLabel>
                         <FormControl>
                           <Input type="password" placeholder="••••••••" {...field} className="bg-zinc-900/50 border-white/10" />
                         </FormControl>
@@ -124,7 +124,7 @@ export default function Auth() {
                   />
                   <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isRegisterPending}>
                     {isRegisterPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Join Guild
+                    Entrar na Guilda
                   </Button>
                 </form>
               </Form>

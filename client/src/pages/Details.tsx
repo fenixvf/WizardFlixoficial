@@ -115,11 +115,11 @@ export default function Details() {
   };
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-10 h-10 text-primary animate-spin" /></div>;
-  if (!anime) return <div className="min-h-screen flex items-center justify-center">Anime not found</div>;
+  if (!anime) return <div className="min-h-screen flex items-center justify-center text-white">Obra não encontrada</div>;
 
   const title = anime.title || anime.name;
   const releaseDate = anime.release_date || anime.first_air_date;
-  const runtime = anime.runtime || (anime.episode_run_time?.length > 0 ? anime.episode_run_time[0] : null);
+  const runtime = anime.runtime || (anime.episode_run_time && anime.episode_run_time.length > 0 ? anime.episode_run_time[0] : null);
   const isFandub = anime.isFandub || isFandubRoute;
   const studio = anime.studio;
   const fandubCast = anime.fandubCast || [];
@@ -446,7 +446,7 @@ export default function Details() {
                           </div>
                         )}
                         <h3 className="font-bold text-sm truncate">{season.name}</h3>
-                        <p className="text-xs text-muted-foreground">{season.episode_count} Episodes</p>
+                        <p className="text-xs text-muted-foreground">{season.episode_count} Episódios</p>
                       </div>
                     </Link>
                   ))}
