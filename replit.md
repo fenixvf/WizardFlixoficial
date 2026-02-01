@@ -45,17 +45,26 @@ Two main tables:
 ### Fandub System
 The application supports fan-dubbed content (Fandub) with custom embed URLs:
 - **Data Storage**: `fandub.json` file in root directory
-- **Routes**: `/details/fandub/:id` and `/watch/fandub/:id` for fandub-specific content
-- **API Endpoints**: `GET /api/fandub` (list all), `GET /api/fandub/:id` (details with TMDB data merged)
+- **Routes**: `/details/fandub/:id` and `/watch/fandub/:id/:season/:episode` for fandub-specific content
+- **API Endpoints**: 
+  - `GET /api/fandub` (list all)
+  - `GET /api/fandub/:id` (details with TMDB data merged, includes `tmdbSeasons` for poster images)
+  - `GET /api/fandub/:id/episode?season=X&episode=Y` (get specific episode embed URL)
 - **Structure**: Each fandub entry contains:
   - `id`: TMDB ID of the anime
+  - `type`: "tv" or "movie"
   - `title`: Display title
-  - `embedUrl`: Custom player embed URL
+  - `embedUrl`: Custom player embed URL (for movies or single-episode content)
+  - `seasons`: Object with season/episode structure and embed URLs (for TV shows)
+    - Example: `{ "1": { "1": "https://drive.google.com/...", "2": "..." }, "2": { "1": "..." } }`
   - `studio`: Object with `name` and `socialLink` for the dubbing studio
   - `cast`: Array of `{ character, voiceActor, characterImage }` for voice actors
+- **Embed URL Support**: Automatically formats Google Drive and YouTube links for embedding
 - **Genre Filter**: "Fandub" appears as a genre option in `/genres` page
 - **UI Features**: 
   - Fandub badge on posters and details page
+  - Season cards with TMDB poster images showing only available dubbed seasons
+  - Episode navigation in watch page based on fandub configuration
   - Cast section with character avatars and voice actor names
   - Studio button with auto-detected social media icon (Instagram, YouTube, Twitter/X, TikTok, Discord, Twitch, Facebook)
 
