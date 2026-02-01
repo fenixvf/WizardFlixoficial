@@ -6,6 +6,7 @@ import { insertUserSchema, insertFavoriteSchema } from "@shared/schema";
 import { z } from "zod";
 import fs from "fs/promises";
 import path from "path";
+import { formatEmbedUrl, organizeSeasons, getEpisodeUrl, getTotalEpisodes, type FandubEmbed } from "./embed-utils";
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -228,15 +229,17 @@ export async function registerRoutes(
       const fandub = JSON.parse(fandubData);
       
       const results = await Promise.all(
-        fandub.fandubs.map(async (item: any) => {
+        fandub.fandubs.map(async (item: FandubEmbed) => {
           try {
-            const tmdbData = await fetchTMDB(`/tv/${item.id}`);
+            const type = item.type || 'tv';
+            const tmdbData = await fetchTMDB(`/${type}/${item.tmdbId}`);
             return {
               ...tmdbData,
               isFandub: true,
-              embedUrl: item.embedUrl,
+              embedUrl: item.embedUrl ? formatEmbedUrl(item.embedUrl) : null,
               studio: item.studio,
-              cast: item.cast
+              cast: item.cast,
+              totalEpisodes: item.seasons ? getTotalEpisodes(item.seasons) : 0
             };
           } catch {
             return null;
@@ -258,7 +261,7 @@ export async function registerRoutes(
       const fandubData = await fs.readFile(fandubPath, 'utf-8');
       const fandub = JSON.parse(fandubData);
       
-      const fandubItem = fandub.fandubs.find((f: any) => f.id === tmdbId);
+      const fandubItem = fandub.fandubs.find((f: FandubEmbed) => f.tmdbId === tmdbId);
       if (!fandubItem) {
         return res.status(404).json({ message: "Fandub não encontrado no catálogo" });
       }
@@ -267,37 +270,57 @@ export async function registerRoutes(
       const tmdbData = await fetchTMDB(`/${type}/${tmdbId}`, {
         append_to_response: 'external_ids,videos,credits'
       });
-      
-      // Converte o link do Drive para o formato de visualização (preview) se necessário
-      const formatDriveUrl = (url: string) => {
-        if (url.includes('drive.google.com') && !url.endsWith('/preview')) {
-          return url.replace(/\/view\?usp=sharing|\/view/g, '') + '/preview';
-        }
-        return url;
-      };
-
-      const formattedSeasons: any = {};
-      if (fandubItem.seasons) {
-        for (const sId in fandubItem.seasons) {
-          formattedSeasons[sId] = {};
-          for (const eId in fandubItem.seasons[sId]) {
-            formattedSeasons[sId][eId] = formatDriveUrl(fandubItem.seasons[sId][eId]);
-          }
-        }
-      }
 
       res.json({
         ...tmdbData,
         isFandub: true,
         type: type,
-        seasons: formattedSeasons,
-        embedUrl: fandubItem.embedUrl ? formatDriveUrl(fandubItem.embedUrl) : null,
+        seasons: fandubItem.seasons ? organizeSeasons(fandubItem.seasons) : [],
+        seasonsRaw: fandubItem.seasons || {},
+        embedUrl: fandubItem.embedUrl ? formatEmbedUrl(fandubItem.embedUrl) : null,
         studio: fandubItem.studio,
-        fandubCast: fandubItem.cast
+        fandubCast: fandubItem.cast,
+        totalEpisodes: fandubItem.seasons ? getTotalEpisodes(fandubItem.seasons) : 0
       });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro ao buscar conteúdo do fandub" });
+    }
+  });
+
+  app.get("/api/fandub/:id/episode", async (req, res) => {
+    try {
+      const tmdbId = parseInt(req.params.id);
+      const season = parseInt(req.query.season as string);
+      const episode = parseInt(req.query.episode as string);
+
+      if (isNaN(season) || isNaN(episode)) {
+        return res.status(400).json({ message: "Temporada e episódio são obrigatórios" });
+      }
+
+      const fandubPath = path.resolve(process.cwd(), 'fandub.json');
+      const fandubData = await fs.readFile(fandubPath, 'utf-8');
+      const fandub = JSON.parse(fandubData);
+
+      const fandubItem = fandub.fandubs.find((f: FandubEmbed) => f.tmdbId === tmdbId);
+      if (!fandubItem || !fandubItem.seasons) {
+        return res.status(404).json({ message: "Fandub não encontrado" });
+      }
+
+      const embedUrl = getEpisodeUrl(fandubItem.seasons, season, episode);
+      if (!embedUrl) {
+        return res.status(404).json({ message: "Episódio não encontrado" });
+      }
+
+      res.json({ 
+        season,
+        episode,
+        embedUrl,
+        tmdbId
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Erro ao buscar episódio" });
     }
   });
 
