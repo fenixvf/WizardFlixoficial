@@ -254,6 +254,11 @@ export async function registerRoutes(
     try {
       const updatedUser = await storage.updateUserProfile(userId, { username, nameColor, avatarUrl });
       if (!updatedUser) return res.status(404).json({ message: "Usuário não encontrado" });
+      
+      // Importante: atualizar os dados na sessão se necessário
+      // Embora aqui usemos o userId da sessão para buscar do banco, 
+      // alguns sistemas guardam cópias dos dados na sessão.
+      
       res.json({
         id: updatedUser.id,
         username: updatedUser.username,
