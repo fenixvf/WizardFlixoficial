@@ -1,0 +1,14 @@
+
+Preview
+Preview your app here
+The app is currently not running.
+to see the results of your app.
+Agent
+Antes de fazer as implementações solicite a api do tmdb, Porque fandub não está carregando as obras mesmo eu colocando o id certinho no fandub Json, e quero que quando faz o upload da foto de perfil ela atualize o ícone do perfil no canto superior direito, quero que a foto de perfil tbm apareça quando a pessoa comentar, e quero que a cor RGB tbm seja mostrada nos comentários e no nome da pessoa no canto superior direito porque mesmo eu escolhendo uma das cores o nome não fica com a cor que eu selecionei, e me explique como o upload de imagem está sendo feito ? Vai pesar o site se muitas pessoas fizerem upload? E como a área de comentários vai afetar o site? Vai pesar muito?
+
+Ready to share? Publish this App in one click.
+Autoscale Deployment
+Primary URL
+wizard-flixoficial--carlianemoreira
+.replit.app
+Agora quando eu salvo a cor e entro no perfil dnv para personalizar n salvou a cor que selecionei, faça uma implementação deixe o nome da pessoa do lado do ícone de perfil, vamos remover o upload de imagem e trabalhar com avatares pre-definidos, crie um código para incorporar imagens de links externos como o postimages, assim que eu colocar o link dos avatares aparecerá lá na personalização para a pessoa escolher, tbm quero que apareça nos comentários, para não sobrecarregar o site quando tiver muitos comentários acrescente um botão de carregar mais comentários, crie um código separado para criadores de conteúdo parceiros do site, onde só eles vão ter a personalização vip e um ícone de verificado do lado do nome na hora de comentar, então para membros comuns eles vão ter acesso somente a cores comuns como vermelho,azul,amarelo,roxo,verde,ciano etc, agora para membros verificados vai abrir as cores RGB, para configurar quem vai ou não ter esse vip quero que crie um código para eu colocar o avatar(imagem) a senha e o nome do perfil, para somente a pessoa que tiver a senha e o nome conseguir fazer o login, então resumindo quero que crie um código para eu colocar o nome específico de cada membro vip o link do avatar dela e a senha que quando a pessoa fizer o login tudo vai ser carregado aí quando ela comentar vai ter o ícone de verificado, e tbm quero que quando uma pessoa clicar no perfil verificado nos comentários e redirecionado pra rede social da pessoa que tbm irei configurar
