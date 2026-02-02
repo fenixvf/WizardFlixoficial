@@ -3,27 +3,48 @@
     {
       "id": 61295,
       "type": "tv",
-      "title": "Pokemon Origins",
+      "title": "Pokemon Origin",
       "studio": {
-        "name": "Studio Exemplo",
-        "socialLink": "https://instagram.com/exemplo"
+        "name": "Phzinho",
+        "socialLink": "https://instagram.com/phzinho_official"
       },
       "seasons": {
         "1": {
-          "1": "https://www.youtube.com/embed/example-s1-e1",
-          "2": "https://www.youtube.com/embed/example-s1-e2"
+          "1": "https://drive.google.com/file/d/1-8HnEcBd6bv19HOFu0we2G1SJNa8VBY-/preview"
         }
       },
+    
+      
       "cast": [
         {
-          "character": "Yuji Itadori",
-          "voiceActor": "Nome do Dublador 1",
-          "characterImage": "https://image.tmdb.org/t/p/w185/characterImagePath.jpg"
+          "character": "Red",
+          "voiceActor": "Phzinho",
+          "characterImage": "https://i.postimg.cc/J0BLxKPy/RED-POKEMON-ORIGIN.jpg"
+        },
+        {
+          "character": "Professor Oak",
+          "voiceActor": "Dublador 2",
+          "characterImage": "https://i.postimg.cc/placeholder2.png"
+        },
+        {
+          "character": "Blue",
+          "voiceActor": "Dublador 3",
+          "characterImage": "https://i.postimg.cc/placeholder3.png"
+        },
+        {
+          "character": "Brock",
+          "voiceActor": "Dublador 4",
+          "characterImage": "https://i.postimg.cc/placeholder4.png"
+        },
+        {
+          "character": "Giovanni",
+          "voiceActor": "Dublador 5",
+          "characterImage": "https://i.postimg.cc/placeholder5.png"
         }
       ]
     },
     {
-      "id": 550,
+      "id": 0,
       "type": "movie",
       "title": "Clube da Luta",
       "studio": {
