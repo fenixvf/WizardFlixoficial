@@ -55,6 +55,18 @@ export function useContentDetails(type: 'movie' | 'tv', id: number) {
   });
 }
 
+// Daily Genres
+export function useDailyGenres() {
+  return useQuery({
+    queryKey: [api.content.dailyGenres.path],
+    queryFn: async () => {
+      const res = await fetch(api.content.dailyGenres.path);
+      if (!res.ok) throw new Error("Failed to fetch daily genres");
+      return api.content.dailyGenres.responses[200].parse(await res.json());
+    },
+  });
+}
+
 // Fandub Content
 export function useFandubList() {
   return useQuery({

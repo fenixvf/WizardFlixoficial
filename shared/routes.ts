@@ -100,6 +100,17 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
+    dailyGenres: {
+      method: 'GET' as const,
+      path: '/api/content/daily-genres',
+      responses: {
+        200: z.array(z.object({
+          id: z.number(),
+          name: z.string(),
+          results: z.array(tmdbResultSchema)
+        })),
+      },
+    },
   },
   favorites: {
     list: {

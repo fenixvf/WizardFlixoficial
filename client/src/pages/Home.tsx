@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useTrending, useNewReleases } from "@/hooks/use-content";
+import { useTrending, useNewReleases, useDailyGenres, useFandubList } from "@/hooks/use-content";
 import { AnimeCard } from "@/components/AnimeCard";
-import { Loader2, Flame, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Loader2, Flame, ChevronLeft, ChevronRight, Sparkles, Mic2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -9,14 +9,14 @@ import { Link } from "wouter";
 export default function Home() {
   const { data, isLoading, error } = useTrending();
   const { data: newReleasesData, isLoading: newReleasesLoading } = useNewReleases();
+  const { data: dailyGenresData, isLoading: dailyGenresLoading } = useDailyGenres();
+  const { data: fandubData, isLoading: fandubLoading } = useFandubList();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const featuredList = data?.results?.slice(0, 10) || [];
   const newReleases = newReleasesData?.results || [];
-
-  // Ordenar trending pela ordem do catálogo (se disponível no backend)
-  // O backend já retorna na ordem do catalog.json
+  const fandubs = fandubData?.results || [];
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -41,10 +41,13 @@ export default function Home() {
   const nextFeatured = () => setCurrentIndex((prev) => (prev + 1) % featuredList.length);
   const prevFeatured = () => setCurrentIndex((prev) => (prev - 1 + featuredList.length) % featuredList.length);
 
-  if (isLoading) {
+  if (isLoading || dailyGenresLoading || fandubLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <p className="text-primary font-rune animate-pulse">Invocando o Catálogo...</p>
+        </div>
       </div>
     );
   }
@@ -209,6 +212,51 @@ export default function Home() {
             >
               <ChevronRight className="w-6 h-6" />
             </Button>
+          </div>
+        </section>
+      )}
+
+      {/* Daily Genres Sections */}
+      {dailyGenresData?.map((genre) => (
+        <section key={genre.id} className="container mx-auto px-4 mt-12 relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-2xl font-rune text-white">{genre.name}</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-4">
+            {genre.results.map((item) => (
+              <AnimeCard 
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                name={item.name}
+                posterPath={item.poster_path}
+                rating={item.vote_average}
+                type={item.title ? 'movie' : 'tv'}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {/* Fandub Section - Permanent */}
+      {fandubs.length > 0 && (
+        <section className="container mx-auto px-4 mt-12 relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <Mic2 className="w-7 h-7 text-blue-400" />
+            <h2 className="text-2xl font-rune text-white font-black tracking-widest uppercase">Fandub - Wizard Flix</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            {fandubs.map((item) => (
+              <AnimeCard 
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                name={item.name}
+                posterPath={item.poster_path}
+                rating={item.vote_average}
+                type="fandub"
+              />
+            ))}
           </div>
         </section>
       )}

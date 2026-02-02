@@ -233,6 +233,56 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/content/daily-genres", async (req, res) => {
+    try {
+      // List of anime-relevant genres in TMDB
+      // 16: Animation (Mandatory for our context)
+      // 10759: Action & Adventure
+      // 35: Comedy
+      // 18: Drama
+      // 10765: Sci-Fi & Fantasy
+      // 9648: Mystery
+      const allGenres = [
+        { id: 10759, name: 'Ação e Aventura' },
+        { id: 35, name: 'Comédia' },
+        { id: 18, name: 'Drama' },
+        { id: 10765, name: 'Sci-Fi e Fantasia' },
+        { id: 9648, name: 'Mistério' },
+        { id: 10751, name: 'Família' },
+        { id: 80, name: 'Crime' }
+      ];
+
+      // Select 3 genres based on the day
+      const today = new Date();
+      const seed = today.getFullYear() * 1000 + today.getMonth() * 100 + today.getDate();
+      const shuffled = [...allGenres].sort((a, b) => {
+        const hashA = (a.id * seed) % 100;
+        const hashB = (b.id * seed) % 100;
+        return hashA - hashB;
+      });
+      const selectedGenres = shuffled.slice(0, 3);
+
+      const results = await Promise.all(selectedGenres.map(async (genre) => {
+        const data = await fetchTMDB('/discover/tv', {
+          with_genres: `16,${genre.id}`,
+          with_original_language: 'ja',
+          sort_by: 'popularity.desc',
+          page: '1'
+        });
+        return {
+          id: genre.id,
+          name: genre.name,
+          results: data.results?.slice(0, 10) || []
+        };
+      }));
+
+      res.json(results);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to fetch daily genres" });
+    }
+  });
+
   app.post("/api/user/avatar", async (req, res) => {
     // Basic implementation for avatar update
     const { userId, avatarUrl } = req.body;
