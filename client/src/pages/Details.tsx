@@ -296,6 +296,38 @@ export default function Details() {
               </div>
             </motion.div>
 
+            {/* Cast Section */}
+            {fandubCast.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-xl font-bold font-rune mb-4 text-purple-300 flex items-center gap-2">
+                  <Mic className="w-5 h-5" />
+                  Elenco de Dublagem
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {fandubCast.map((member: any, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                      className="bg-zinc-900/50 border border-white/5 rounded-xl p-3 flex flex-col items-center text-center group hover:border-primary/30 transition-all duration-300"
+                    >
+                      <Avatar className="h-20 w-20 mb-3 border-2 border-primary/20 group-hover:border-primary/50 transition-colors shadow-lg shadow-black/50">
+                        <AvatarImage src={member.characterImage} alt={member.character} className="object-cover" />
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                          {member.character.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-bold text-white line-clamp-1 group-hover:text-primary transition-colors">{member.character}</p>
+                        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">{member.voiceActor}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
