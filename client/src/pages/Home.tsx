@@ -177,14 +177,16 @@ export default function Home() {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {others.map((item: any) => (
-              <div key={item.id} className="flex-shrink-0 w-40">
+              <div key={item.id} className="flex-shrink-0 w-80">
                 <AnimeCard 
                   id={item.id}
                   title={item.title}
                   name={item.name}
                   posterPath={item.poster_path}
+                  backdropPath={item.backdrop_path}
                   rating={item.vote_average}
                   type={item.title ? 'movie' : 'tv'}
+                  variant="horizontal"
                 />
               </div>
             ))}
