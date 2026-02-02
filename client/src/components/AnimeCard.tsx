@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Star, Mic } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface AnimeCardProps {
   id: number;
