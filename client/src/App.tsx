@@ -44,13 +44,21 @@ function Router() {
 }
 
 function MainLayout() {
-  const { data: user } = useUser();
+  const { data: user, isLoading } = useUser();
   const { mutate: logout } = useLogout();
 
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "4rem",
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -96,7 +104,7 @@ function MainLayout() {
                       {/* Avatar do Usuário */}
                       <div className="h-8 w-8 rounded-xl overflow-hidden border border-primary/20">
                         {user?.avatarUrl ? (
-                          <img src={user.avatarUrl} className="h-full w-full object-cover" alt="Avatar" />
+                          <img key={user.avatarUrl} src={user.avatarUrl} className="h-full w-full object-cover" alt="Avatar" />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center bg-primary/10">
                             <User className="h-5 w-5 text-primary" />
