@@ -195,6 +195,17 @@ export default function Details() {
               />
             </div>
             
+            {/* Logo/Typography section */}
+            {anime.images?.logos?.[0] && (
+              <div className="mt-4 flex justify-center">
+                <img 
+                  src={`https://image.tmdb.org/t/p/w500${anime.images.logos[0].file_path}`}
+                  alt="Logo"
+                  className="max-h-20 w-auto object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]"
+                />
+              </div>
+            )}
+            
             <div className="mt-6 flex flex-col gap-3">
               <Link href={isFandub ? `/watch/fandub/${id}` : `/watch/${type}/${id}`}>
                 <Button className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-xl" data-testid="button-watch">

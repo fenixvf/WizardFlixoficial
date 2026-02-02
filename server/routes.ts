@@ -356,9 +356,10 @@ export async function registerRoutes(
   app.get('/api/content/:type/:id', async (req, res) => {
     try {
       const { type, id } = req.params;
-      // Get Details + IMDB ID (External IDs)
+      // Get Details + IMDB ID (External IDs) + Images for Typography
       const data = await fetchTMDB(`/${type}/${id}`, {
-        append_to_response: 'external_ids,videos,credits'
+        append_to_response: 'external_ids,videos,credits,images',
+        include_image_language: 'en,ja,pt'
       });
       res.json(data);
     } catch (err) {

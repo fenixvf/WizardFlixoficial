@@ -18,6 +18,27 @@ export default function Home() {
   const newReleases = newReleasesData?.results || [];
   const fandubs = fandubData?.results || [];
 
+  // Logic for Fandub in Hero (last 5 days)
+  const [heroItems, setHeroItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!data?.results) return;
+    
+    const trending = data.results.slice(0, 10);
+    const recentFandubs = fandubs.filter((f: any) => {
+      if (!f.addedAt) return false;
+      const addedDate = new Date(f.addedAt);
+      const diffTime = Math.abs(new Date().getTime() - addedDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 5;
+    });
+
+    // Merge trending and recent fandubs, ensuring uniqueness
+    const merged = [...recentFandubs, ...trending];
+    const unique = merged.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i).slice(0, 12);
+    setHeroItems(unique);
+  }, [data, fandubs]);
+
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
@@ -31,15 +52,15 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (featuredList.length === 0) return;
+    if (heroItems.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % featuredList.length);
+      setCurrentIndex((prev) => (prev + 1) % heroItems.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, [featuredList.length]);
+  }, [heroItems.length]);
 
-  const nextFeatured = () => setCurrentIndex((prev) => (prev + 1) % featuredList.length);
-  const prevFeatured = () => setCurrentIndex((prev) => (prev - 1 + featuredList.length) % featuredList.length);
+  const nextFeatured = () => setCurrentIndex((prev) => (prev + 1) % heroItems.length);
+  const prevFeatured = () => setCurrentIndex((prev) => (prev - 1 + heroItems.length) % heroItems.length);
 
   if (isLoading || dailyGenresLoading || fandubLoading) {
     return (
@@ -69,9 +90,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[85vh] w-full overflow-hidden">
         <AnimatePresence mode="wait">
-          {featured && (
+          {heroItems.length > 0 && heroItems[currentIndex] && (
             <motion.div 
-              key={featured.id}
+              key={heroItems[currentIndex].id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -80,7 +101,7 @@ export default function Home() {
             >
               <div className="absolute inset-0">
                 <img 
-                  src={`https://image.tmdb.org/t/p/original${featured.backdrop_path}`} 
+                  src={`https://image.tmdb.org/t/p/original${heroItems[currentIndex].backdrop_path}`} 
                   alt="Hero"
                   className="w-full h-full object-cover opacity-60"
                 />
@@ -96,23 +117,29 @@ export default function Home() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="max-w-2xl"
                   >
-                    <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-sm font-bold mb-4 backdrop-blur-sm">
-                      #{currentIndex + 1} Obras em Alta
-                    </span>
+                    {heroItems[currentIndex].isFandub ? (
+                      <span className="inline-block px-3 py-1 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-200 text-sm font-bold mb-4 backdrop-blur-sm animate-pulse">
+                        ✨ Novo Fã Dublagem ✨
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-sm font-bold mb-4 backdrop-blur-sm">
+                        #{currentIndex + 1} Obras em Alta
+                      </span>
+                    )}
                     <h1 className="text-5xl md:text-7xl font-rune text-white mb-4 drop-shadow-[0_0_10px_rgba(139,92,246,0.5)] leading-tight">
-                      {featured.title || featured.name}
+                      {heroItems[currentIndex].title || heroItems[currentIndex].name}
                     </h1>
                     <p className="text-lg md:text-xl text-gray-200 line-clamp-3 mb-8 font-light leading-relaxed">
-                      {featured.overview}
+                      {heroItems[currentIndex].overview}
                     </p>
                     
                     <div className="flex flex-wrap gap-4">
-                      <Link href={`/details/${featured.title ? 'movie' : 'tv'}/${featured.id}`}>
+                      <Link href={heroItems[currentIndex].isFandub ? `/details/fandub/${heroItems[currentIndex].id}` : `/details/${heroItems[currentIndex].title ? 'movie' : 'tv'}/${heroItems[currentIndex].id}`}>
                         <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-6 text-lg rounded-xl shadow-[0_0_20px_-5px_rgba(139,92,246,0.6)] border border-white/10">
                           Detalhes
                         </Button>
                       </Link>
-                      <Link href={`/watch/${featured.title ? 'movie' : 'tv'}/${featured.id}`}>
+                      <Link href={heroItems[currentIndex].isFandub ? `/watch/fandub/${heroItems[currentIndex].id}` : `/watch/${heroItems[currentIndex].title ? 'movie' : 'tv'}/${heroItems[currentIndex].id}`}>
                         <Button size="lg" variant="outline" className="bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold px-8 py-6 text-lg rounded-xl backdrop-blur-sm">
                           Assistir Agora
                         </Button>
@@ -125,9 +152,9 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Carousel Indicators - Moved to bottom of Hero */}
+        {/* Carousel Indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {featuredList.map((_, idx) => (
+          {heroItems.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
@@ -144,18 +171,24 @@ export default function Home() {
           <h2 className="text-3xl font-rune text-white">Obras em Alta</h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-          {others.map((item) => (
-            <AnimeCard 
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              name={item.name}
-              posterPath={item.poster_path}
-              rating={item.vote_average}
-              type={item.title ? 'movie' : 'tv'}
-            />
-          ))}
+        <div className="relative group">
+          <div 
+            className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {others.map((item: any) => (
+              <div key={item.id} className="flex-shrink-0 w-40">
+                <AnimeCard 
+                  id={item.id}
+                  title={item.title}
+                  name={item.name}
+                  posterPath={item.poster_path}
+                  rating={item.vote_average}
+                  type={item.title ? 'movie' : 'tv'}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
