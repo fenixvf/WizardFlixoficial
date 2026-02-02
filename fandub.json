@@ -20,26 +20,6 @@
           "character": "Red",
           "voiceActor": "Phzinho",
           "characterImage": "https://i.postimg.cc/J0BLxKPy/RED-POKEMON-ORIGIN.jpg"
-        },
-        {
-          "character": "Professor Oak",
-          "voiceActor": "Dublador 2",
-          "characterImage": "https://i.postimg.cc/placeholder2.png"
-        },
-        {
-          "character": "Blue",
-          "voiceActor": "Dublador 3",
-          "characterImage": "https://i.postimg.cc/placeholder3.png"
-        },
-        {
-          "character": "Brock",
-          "voiceActor": "Dublador 4",
-          "characterImage": "https://i.postimg.cc/placeholder4.png"
-        },
-        {
-          "character": "Giovanni",
-          "voiceActor": "Dublador 5",
-          "characterImage": "https://i.postimg.cc/placeholder5.png"
         }
       ]
     },
