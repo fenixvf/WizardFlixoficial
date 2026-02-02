@@ -265,6 +265,7 @@ export default function Home() {
                     posterPath={item.poster_path}
                     rating={item.vote_average}
                     type={item.title ? 'movie' : 'tv'}
+                    isFandub={true}
                   />
                 </div>
               ))}
