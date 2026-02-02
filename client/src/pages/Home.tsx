@@ -217,13 +217,13 @@ export default function Home() {
       )}
 
       {/* Daily Genres Sections */}
-      {dailyGenresData?.map((genre) => (
+      {dailyGenresData?.map((genre: any) => (
         <section key={genre.id} className="container mx-auto px-4 mt-12 relative z-10">
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-2xl font-rune text-white">{genre.name}</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-4">
-            {genre.results.map((item) => (
+            {genre.results.map((item: any) => (
               <AnimeCard 
                 key={item.id}
                 id={item.id}
@@ -242,11 +242,11 @@ export default function Home() {
       {fandubs.length > 0 && (
         <section className="container mx-auto px-4 mt-12 relative z-10">
           <div className="flex items-center gap-3 mb-6">
-            <Mic2 className="w-7 h-7 text-blue-400" />
+            <Sparkles className="w-7 h-7 text-blue-400" />
             <h2 className="text-2xl font-rune text-white font-black tracking-widest uppercase">Fandub - Wizard Flix</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {fandubs.map((item) => (
+            {fandubs.map((item: any) => (
               <AnimeCard 
                 key={item.id}
                 id={item.id}
@@ -254,7 +254,7 @@ export default function Home() {
                 name={item.name}
                 posterPath={item.poster_path}
                 rating={item.vote_average}
-                type="fandub"
+                type={item.title ? 'movie' : 'tv'}
               />
             ))}
           </div>
