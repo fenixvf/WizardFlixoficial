@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import verifiedBadge from "@assets/717fdc66e8ae8bda2345abd93c9ea4d7_1769920818759.png";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 export default function Details() {
   const [location] = useLocation();
@@ -305,7 +306,7 @@ export default function Details() {
               <p className="text-lg leading-relaxed text-gray-300/90">{anime.overview}</p>
             </motion.div>
 
-            {/* Cast Section */}
+            {/* Cast Section - Carousel */}
             {fandubCast.length > 0 && (
               <div className="mt-12 bg-zinc-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm shadow-xl">
                 <h2 className="text-2xl font-bold font-rune mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-white flex items-center gap-3">
@@ -314,39 +315,55 @@ export default function Details() {
                   </div>
                   Elenco de Dublagem
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                  {fandubCast.map((member: any, index: number) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.05 * index }}
-                      className="group relative"
-                    >
-                      <div className="absolute -inset-0.5 bg-gradient-to-b from-purple-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-                      <div className="relative bg-zinc-950/50 border border-white/5 rounded-2xl p-4 flex flex-col items-center text-center hover:border-purple-500/30 transition-all duration-300 h-full">
-                        <div className="relative mb-4 group-hover:scale-105 transition-transform duration-300">
-                          <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-                          <Avatar className="h-24 w-24 border-2 border-purple-500/20 group-hover:border-purple-500/50 transition-colors shadow-2xl relative">
-                            <AvatarImage src={member.characterImage} alt={member.character} className="object-cover" />
-                            <AvatarFallback className="bg-purple-900/30 text-purple-300 font-bold text-xl">
-                              {member.character.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <div className="space-y-1 w-full">
-                          <p className="text-base font-black text-white line-clamp-1 group-hover:text-purple-300 transition-colors leading-tight">
-                            {member.character}
-                          </p>
-                          <div className="h-px w-8 bg-purple-500/30 mx-auto my-1" />
-                          <p className="text-[10px] text-purple-400/80 font-black uppercase tracking-[0.2em]">
-                            {member.voiceActor}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                <Carousel
+                  opts={{
+                    align: "start",
+                    dragFree: true,
+                  }}
+                  className="w-full"
+                >
+                  <CarouselContent className="-ml-2 md:-ml-4">
+                    {fandubCast.map((member: any, index: number) => (
+                      <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.05 * Math.min(index, 5) }}
+                          className="group relative h-full"
+                        >
+                          <div className="absolute -inset-0.5 bg-gradient-to-b from-purple-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
+                          <div className="relative bg-zinc-950/50 border border-white/5 rounded-2xl p-4 flex flex-col items-center text-center hover:border-purple-500/30 transition-all duration-300 h-full">
+                            <div className="relative mb-4 group-hover:scale-105 transition-transform duration-300">
+                              <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-purple-500/20 group-hover:border-purple-500/50 transition-colors shadow-2xl relative">
+                                <AvatarImage src={member.characterImage} alt={member.character} className="object-cover" />
+                                <AvatarFallback className="bg-purple-900/30 text-purple-300 font-bold text-lg md:text-xl">
+                                  {member.character.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            <div className="space-y-1 w-full">
+                              <p className="text-sm md:text-base font-black text-white line-clamp-1 group-hover:text-purple-300 transition-colors leading-tight">
+                                {member.character}
+                              </p>
+                              <div className="h-px w-8 bg-purple-500/30 mx-auto my-1" />
+                              <p className="text-[9px] md:text-[10px] text-purple-400/80 font-black uppercase tracking-[0.15em] md:tracking-[0.2em]">
+                                {member.voiceActor}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <div className="hidden md:block">
+                    <CarouselPrevious className="left-0 -translate-x-1/2 bg-purple-600/80 border-purple-500 hover:bg-purple-500 text-white" />
+                    <CarouselNext className="right-0 translate-x-1/2 bg-purple-600/80 border-purple-500 hover:bg-purple-500 text-white" />
+                  </div>
+                </Carousel>
+                <p className="text-center text-xs text-muted-foreground mt-4 md:hidden">
+                  Arraste para ver mais
+                </p>
               </div>
             )}
 
