@@ -54,9 +54,9 @@ export default function Profile() {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["/api/auth/me"], data);
-      // Invalida a query para garantir que todos os componentes (como o Header) recebam os novos dados
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      // Forçar atualização do cache global
+      queryClient.setQueryData(["/api/user"], data);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({ title: "Perfil Atualizado", description: "Suas mudanças foram salvas no grimório." });
     },
   });
