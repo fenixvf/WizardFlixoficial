@@ -1,8 +1,25 @@
 {
   "anime": [
-    { "id": 95479, "title": "Jujutsu Kaisen" },
+    { "id": 95479, "title": "JUJUTSU KAISEN" },
+    { "id": 209867, "title": "Frieren: Beyond Journey's End" },
+    { "id": 117465, "title": "Hell's Paradise" },
+    { "id": 127532, "title": "Solo Leveling" },
+    { "id": 120089, "title": "SPY x FAMILY" },
+    { "id": 220542, "title": "The Apothecary Diaries" },
+    { "id": 203737, "title": "【OSHI NO KO】" },
+    { "id": 256721, "title": "Gachiakuta" },
+    { "id": 94664, "title": "Mushoku Tensei: Jobless Reincarnation" },
+    { "id": 207468, "title": "Kaiju No. 8" },
+    { "id": 97525, "title": "To Your Eternity" },
+    { "id": 104711, "title": "EDENS ZERO" },
+    { "id": 240411, "title": "Dan Da Dan" },
+    { "id": 205050, "title": "Shangri-La Frontier" },
+    { "id": 131041, "title": "BLUE LOCK" },
+    { "id": 96316, "title": "Rent-a-Girlfriend" },
+    { "id": 271607, "title": "The Fragrant Flower Blooms with Dignity" },
+    { "id": 123249, "title": "My Dress-Up Darling" },
     { "id": 114410, "title": "Chainsaw Man" },
-    { "id": 110316, "title": "Blue Lock" }
+    { "id": 119495, "title": "The Eminence in Shadow" }
   ],
   "movies": [
     { "id": 550, "title": "Fight Club" }
