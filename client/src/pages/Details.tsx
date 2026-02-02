@@ -549,40 +549,6 @@ export default function Details() {
               )}
             </AnimatePresence>
 
-            {isFandub && fandubCast.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="pt-6"
-              >
-                <h2 className="text-2xl font-rune mb-4 text-white flex items-center gap-2">
-                  <Mic className="w-6 h-6 text-purple-400" />
-                  Elenco de Dublagem
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {fandubCast.map((cast: any, index: number) => (
-                    <div 
-                      key={index} 
-                      className="bg-zinc-900/60 border border-white/10 rounded-xl p-4 text-center hover:bg-zinc-800/60 transition-colors"
-                    >
-                      <Avatar className="w-20 h-20 mx-auto mb-3 border-2 border-primary/30">
-                        <AvatarImage 
-                          src={cast.characterImage ? `https://image.tmdb.org/t/p/w185${cast.characterImage}` : undefined} 
-                          alt={cast.character} 
-                        />
-                        <AvatarFallback className="bg-primary/20 text-primary text-xl font-rune">
-                          {cast.character?.charAt(0) || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <h3 className="font-bold text-white text-sm truncate">{cast.character}</h3>
-                      <p className="text-xs text-purple-400 mt-1 font-medium">{cast.voiceActor}</p>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
             {type === 'tv' && (isFandub ? anime.seasons?.length > 0 : anime.seasons) && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
