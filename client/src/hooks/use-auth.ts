@@ -22,6 +22,7 @@ export function useUser() {
       return res.json();
     },
     retry: false,
+    staleTime: 0,
   });
 }
 
